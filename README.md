@@ -63,3 +63,37 @@ This project was collaboratively developed by:
    git clone https://github.com/your-repo/book-management-system.git
    cd book-management-system
 
+2. **Setup Backend**:
+
+***Navigate to the backend directory***:
+
+**mvn clean install**
+**Run the backend server**:
+
+***mvn spring-boot:run***
+
+3. **Setup Frontend**:
+
+***Navigate to the frontend directory***:
+
+**npm install**
+**Run the React development server:**
+
+**npm start**
+
+4. **Access the Application**:
+
+### ***Open your browser and go to http://localhost:3000 for the frontend.***
+## ***The backend should be running at http://localhost:8080.***
+# Usage
+**Customer Interface: Browse books, add them to your cart, and proceed to purchase or loan them.
+Admin Interface: Manage the book inventory, track sales and loans, and manage user subscriptions.**
+
+
+## Contact
+**For any questions, feedback, or suggestions, please contact the project creators:**
+
+# Ismet Ymeri
+# Samuli Lamminmäki
+# Stefanos Thomas 
+# Onni Luova 
