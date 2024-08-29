@@ -1,0 +1,4 @@
+// remove "example" from file name and insert correct database credentials
+DB_URL=example
+DB_USERNAME=example
+DB_PASSWORD=example
