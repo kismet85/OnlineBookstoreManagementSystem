@@ -22,4 +22,11 @@ public class User {
         private String lastName;
         private String email;
         private String country;
+        private int streetNumber;
+        private String streetName;
+        private int phoneNumber;
+        private int postalCode;
+        private String provice;
+        private String role;
+
 }
