@@ -10,23 +10,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.NaturalId;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-        @Id
-        private Long id;
-        private String firstName;
-        private String lastName;
-        private String email;
-        private String country;
-        private int streetNumber;
-        private String streetName;
-        private int phoneNumber;
-        private int postalCode;
-        private String provice;
-        private String role;
-
+public class Book {
+    @Id
+    private Long id;
+    private String title;
+    private String isbn;
+    private String genre;
+    private String type;
+    private int publication_year;
+    private BigDecimal price; // Change here
+    private String book_condition;
+    private boolean reserved;
+    private int inventory_id;
+    private int publisher_id;
 }
