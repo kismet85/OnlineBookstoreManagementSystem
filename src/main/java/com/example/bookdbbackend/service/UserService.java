@@ -1,15 +1,26 @@
 package com.example.bookdbbackend.service;
 
 import com.example.bookdbbackend.model.User;
+import com.example.bookdbbackend.repository.UserRepository;
+import com.example.bookdbbackend.exception.UserAlreadyExistsException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public class UserService implements IUserService{
-
-
+@Service
+public class UserService implements IUserService {
+    private UserRepository userRepository;
     @Override
     public User addUser(User user) {
-        return null;
+        if (userRepository.findById(user.getId()).isPresent()) { throw new
+                UserAlreadyExistsException(user.getEmail() + " already exists!");
+        }
+            return userRepository.save(user);
+    }
+    private boolean userAlreadyExists(Long id) {
+
+        return userRepository.findById(id).isPresent();
+
     }
 
     @Override
