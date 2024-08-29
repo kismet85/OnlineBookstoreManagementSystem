@@ -3,16 +3,18 @@ package com.example.bookdbbackend.service;
 import com.example.bookdbbackend.model.User;
 import com.example.bookdbbackend.repository.UserRepository;
 import com.example.bookdbbackend.exception.UserAlreadyExistsException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class UserService implements IUserService {
+    @Autowired
     private UserRepository userRepository;
     @Override
     public User addUser(User user) {
-        if (userRepository.findById(user.getId()).isPresent()) { throw new
+        if (userRepository.findById(user.getUser_id()).isPresent()) { throw new
                 UserAlreadyExistsException(user.getEmail() + " already exists!");
         }
             return userRepository.save(user);
@@ -25,7 +27,7 @@ public class UserService implements IUserService {
 
     @Override
     public List<User> getUsers() {
-        return null;
+        return userRepository.findAll();
     }
 
     @Override

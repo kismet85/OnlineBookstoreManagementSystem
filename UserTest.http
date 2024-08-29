@@ -3,14 +3,13 @@ Content-Type: application/json
 
 {
   "id": 1,
-  "firstName": "John",
-  "lastName": "Doe",
+  "first_name": "John",
+  "last_name": "Doe",
   "email": "john.doe@example.com",
-  "country": "USA",
-  "streetNumber": 123,
-  "streetName": "Main Street",
-  "phoneNumber": 555123456,
-  "postalCode": 90210,
-  "provice": "California",
+  "street_number": 123,
+  "street_name": "Main Street",
+  "phone_number": 555123456,
+  "postal_code": 90210,
+  "province": "California",
   "role": "Admin"
 }
