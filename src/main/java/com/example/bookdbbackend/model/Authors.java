@@ -7,16 +7,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "inventory")
+@Table(name = "authors")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Inventory {
+public class Authors {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long inventory_id;
-    private int stock_level_used;
-    private int stock_level_new;
-    private int reserved_stock;
+    private Long author_id;
+
+    private String first_name;
+
+    private String last_name;
 }

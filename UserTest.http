@@ -1,0 +1,16 @@
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "id": 1,
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "country": "USA",
+  "streetNumber": 123,
+  "streetName": "Main Street",
+  "phoneNumber": 555123456,
+  "postalCode": 90210,
+  "provice": "California",
+  "role": "Admin"
+}

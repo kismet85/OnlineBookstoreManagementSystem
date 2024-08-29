@@ -4,7 +4,6 @@ import java.util.List;
 import com.example.bookdbbackend.model.User;
 
 public interface IUserService {
-
         User addUser(User user);
         List<User> getUsers();
 
@@ -13,6 +12,4 @@ public interface IUserService {
         User getUserById(Long id);
 
         void deleteUser(Long id);
-
-
 }
