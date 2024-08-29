@@ -21,11 +21,10 @@ public class User {
         private String first_name;
         private String last_name;
         private String email;
-        private String country;
-        private Long street_number;
+        private int street_number;
         private String street_name;
-        private Long phone_number;
-        private Long postal_code;
+        private int phone_number;
+        private int postal_code;
         private String province;
         private String role;
 }

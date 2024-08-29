@@ -19,7 +19,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final IUserService iUserService;
-
+    @GetMapping
+    public ResponseEntity<List<User>> getUsers()
+    {
+        return new ResponseEntity<>(iUserService.getUsers(), HttpStatus.FOUND);
+    }
     @PostMapping
     public User addUser(@RequestBody User user)
     {

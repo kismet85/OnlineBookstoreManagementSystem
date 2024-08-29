@@ -12,7 +12,7 @@ public class UserService implements IUserService {
     private UserRepository userRepository;
     @Override
     public User addUser(User user) {
-        if (userRepository.findById(user.getId()).isPresent()) { throw new
+        if (userRepository.findById(user.getUser_id()).isPresent()) { throw new
                 UserAlreadyExistsException(user.getEmail() + " already exists!");
         }
             return userRepository.save(user);
@@ -25,7 +25,7 @@ public class UserService implements IUserService {
 
     @Override
     public List<User> getUsers() {
-        return null;
+        return userRepository.findAll();
     }
 
     @Override
