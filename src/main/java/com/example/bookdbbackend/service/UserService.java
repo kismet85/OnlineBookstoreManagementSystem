@@ -3,12 +3,14 @@ package com.example.bookdbbackend.service;
 import com.example.bookdbbackend.model.User;
 import com.example.bookdbbackend.repository.UserRepository;
 import com.example.bookdbbackend.exception.UserAlreadyExistsException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class UserService implements IUserService {
+    @Autowired
     private UserRepository userRepository;
     @Override
     public User addUser(User user) {
