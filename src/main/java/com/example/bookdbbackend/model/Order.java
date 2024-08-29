@@ -1,27 +1,31 @@
 package com.example.bookdbbackend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 @Entity
+@Table(name = "orders")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
     @Id
-    private Long bookId;
-    private String orderDate;
-    private double shipping;
-    private double total;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long order_id;
+    private int shipping;
+    private BigDecimal total;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Column(name = "order_date", columnDefinition = "DATE")
+    private LocalDate orderDate;
 }

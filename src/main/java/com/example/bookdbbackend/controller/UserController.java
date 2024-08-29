@@ -1,9 +1,28 @@
 package com.example.bookdbbackend.controller;
 
+import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.example.bookdbbackend.model.User;
+import com.example.bookdbbackend.service.IUserService;
+
 
 import java.util.List;
 
+@RestController
+@RequestMapping("/users")
+@RequiredArgsConstructor
+public class UserController {
+    private final IUserService iUserService;
+    @GetMapping
+    public ResponseEntity<List<User>> getUsers()
+    {
+        return new ResponseEntity<>(iUserService.getUsers(), HttpStatus.FOUND);
+    }
+    @PostMapping
+    public User addUser(@RequestBody User user)
+    {
+        return iUserService.addUser(user);
+    }
+}

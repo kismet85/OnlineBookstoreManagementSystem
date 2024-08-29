@@ -5,20 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NaturalId;
-
-import java.math.BigDecimal;
 
 @Entity
+@Table(name = "inventory")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class Inventory {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long inventory_id;
     private int stock_level_used;
     private int stock_level_new;
-    private int reserved_used;
+    private int reserved_stock;
 }

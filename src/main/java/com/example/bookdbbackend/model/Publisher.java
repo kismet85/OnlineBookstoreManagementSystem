@@ -10,6 +10,7 @@ import org.hibernate.annotations.NaturalId;
 import java.math.BigDecimal;
 
 @Entity
+@Table(name = "publishers")
 @Getter
 @Setter
 @AllArgsConstructor

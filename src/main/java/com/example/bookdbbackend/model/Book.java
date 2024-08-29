@@ -5,28 +5,33 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NaturalId;
 
 import java.math.BigDecimal;
 
 @Entity
+@Table(name = "books")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Book {
     @Id
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long book_id;
+
     private String title;
     private String isbn;
     private String genre;
     private String type;
+
     private int publication_year;
+
+    @Column(precision = 10, scale = 2)
     private BigDecimal price;
+
     private String book_condition;
+
     private boolean reserved;
-    private int inventory_id;
-    private int publisher_id;
 
     @ManyToOne
     @JoinColumn(name = "inventory_id")
