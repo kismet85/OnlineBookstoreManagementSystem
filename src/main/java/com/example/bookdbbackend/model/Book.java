@@ -1,9 +1,6 @@
 package com.example.bookdbbackend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,9 +22,17 @@ public class Book {
     private String genre;
     private String type;
     private int publication_year;
-    private BigDecimal price; // Change here
+    private BigDecimal price;
     private String book_condition;
     private boolean reserved;
     private int inventory_id;
     private int publisher_id;
+
+    @ManyToOne
+    @JoinColumn(name = "inventory_id")
+    private Inventory inventory;
+
+    @ManyToOne
+    @JoinColumn(name = "publisher_id")
+    private Publisher publisher;
 }
