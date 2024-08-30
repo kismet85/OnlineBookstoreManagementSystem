@@ -17,8 +17,6 @@ import java.util.List;
 public class InventoryController {
 
     private final IInventoryService iInventoryService;
-    private final IBookService iBookService;
-
 
     @GetMapping("/{id}")
     public ResponseEntity<Inventory> getInventoryById(@PathVariable Long id) {
