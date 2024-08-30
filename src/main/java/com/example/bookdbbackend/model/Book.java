@@ -1,5 +1,6 @@
 package com.example.bookdbbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,5 +44,6 @@ public class Book {
     private Publisher publisher;
 
     @OneToMany(mappedBy = "book")
+    @JsonIgnore
     private Set<WrittenBy> writtenBy;
 }
