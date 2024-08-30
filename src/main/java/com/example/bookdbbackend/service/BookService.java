@@ -70,7 +70,10 @@ public class BookService implements IBookService {
         return book.get();
         }
 
-
+    @Override
+    public List <Book> getBooksByAuthorId(Long author_id) {
+        return bookRepository.findBooksByAuthorId(author_id);
+    }
 
     @Override
     public Book getBookByIsbn(String isbn) {
