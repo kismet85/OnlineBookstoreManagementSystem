@@ -63,7 +63,7 @@ public class BookService implements IBookService {
 
     @Override
     public Book getBookByTitle(String title) {
-        Optional<Book> book = bookRepository.findByTitle(title);
+        Optional<Book> book = bookRepository.findBookByTitle(title);
         if (!book.isPresent()){
             throw new BookNotFoundException("Book with title " + title + " not found");
         }
