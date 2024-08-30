@@ -1,5 +1,6 @@
 package com.example.bookdbbackend.controller;
 
+import com.example.bookdbbackend.exception.UserNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,14 +15,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final IUserService iUserService;
+
     @GetMapping
-    public ResponseEntity<List<User>> getUsers()
-    {
+    public ResponseEntity<List<User>> getUsers() {
         return new ResponseEntity<>(iUserService.getUsers(), HttpStatus.FOUND);
     }
+
     @PostMapping
-    public User addUser(@RequestBody User user)
-    {
+    public User addUser(@RequestBody User user) {
         return iUserService.addUser(user);
     }
 
@@ -30,7 +31,17 @@ public class UserController {
         try {
             User updatedUser = iUserService.updateUser(user, id);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-        } catch (RuntimeException e) {
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        try {
+            User user = iUserService.getUserById(id);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

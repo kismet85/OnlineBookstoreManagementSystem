@@ -1,5 +1,6 @@
 package com.example.bookdbbackend.service;
 
+import com.example.bookdbbackend.exception.UserNotFoundException;
 import com.example.bookdbbackend.model.User;
 import com.example.bookdbbackend.repository.UserRepository;
 import com.example.bookdbbackend.exception.UserAlreadyExistsException;
@@ -27,6 +28,10 @@ public class UserService implements IUserService {
 
     @Override
     public User updateUser(User user, Long id) {
+        if (!userRepository.findById(id).isPresent()) {
+            throw new UserNotFoundException("User not found with id: " + id);
+        }
+
         return userRepository.findById(id).map(existingUser -> {
             existingUser.setFirst_name(user.getFirst_name());
             existingUser.setLast_name(user.getLast_name());
@@ -38,13 +43,15 @@ public class UserService implements IUserService {
             existingUser.setProvince(user.getProvince());
             existingUser.setRole(user.getRole());
             return userRepository.save(existingUser);
-        })
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        }).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
     @Override
     public User getUserById(Long id) {
-        return null;
+        if (!userRepository.findById(id).isPresent()) {
+            throw new UserNotFoundException("User not found with id: " + id);
+        }
+        return userRepository.findById(id).get();
     }
 
     @Override
