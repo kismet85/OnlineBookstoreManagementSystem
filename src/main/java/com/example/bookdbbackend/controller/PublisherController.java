@@ -19,14 +19,14 @@ public class PublisherController {
 
     @GetMapping
     public ResponseEntity<List<Publisher>> getAllPublishers() {
-        return new ResponseEntity<>(iPublisherService.getAllPublishers(), HttpStatus.FOUND);
+        return new ResponseEntity<>(iPublisherService.getAllPublishers(), HttpStatus.OK);
     }
 
     @GetMapping("/publishers/{id}")
     public ResponseEntity<Publisher> getPublisherById(@PathVariable Long id) {
         try {
             Publisher publisher = iPublisherService.getPublisherById(id);
-            return new ResponseEntity<>(publisher, HttpStatus.FOUND);
+            return new ResponseEntity<>(publisher, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

@@ -17,14 +17,14 @@ public class BookController {
 
     @GetMapping
     public ResponseEntity<List<Book>> getBooks() {
-        return new ResponseEntity<>(iBookService.getAllBooks(), HttpStatus.FOUND);
+        return new ResponseEntity<>(iBookService.getAllBooks(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Long id) {
         try {
             Book book = iBookService.getBookById(id);
-            return new ResponseEntity<>(book, HttpStatus.FOUND);
+            return new ResponseEntity<>(book, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -33,7 +33,7 @@ public class BookController {
     @GetMapping("/author/{author_id}")
     public ResponseEntity<List<Book>> getBooksByAuthorId(@PathVariable Long author_id) {
         List<Book> books = iBookService.getBooksByAuthorId(author_id);
-        return new ResponseEntity<>(books, HttpStatus.FOUND);
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
     @PostMapping

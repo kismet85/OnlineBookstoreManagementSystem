@@ -18,7 +18,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<User>> getUsers() {
-        return new ResponseEntity<>(iUserService.getUsers(), HttpStatus.FOUND);
+        return new ResponseEntity<>(iUserService.getUsers(), HttpStatus.OK);
     }
 
     @PostMapping

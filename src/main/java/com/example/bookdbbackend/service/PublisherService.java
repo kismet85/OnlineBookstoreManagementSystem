@@ -5,7 +5,7 @@ import com.example.bookdbbackend.exception.BookNotFoundException;
 import com.example.bookdbbackend.exception.PublisherNotFoundException;
 import com.example.bookdbbackend.exception.UserNotFoundException;
 import com.example.bookdbbackend.model.Publisher;
-import com.example.bookdbbackend.repository.PublisherInventory;
+import com.example.bookdbbackend.repository.PublisherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.Optional;
 public class PublisherService implements IPublisherService{
 
     @Autowired
-    private final PublisherInventory publisherInventory;
+    private final PublisherRepository publisherRepository;
 
     @Override
     public Publisher addPublisher(Publisher publisher) {
@@ -26,27 +26,27 @@ public class PublisherService implements IPublisherService{
         {
             throw new BookAlreadyExistsException("Publisher with id " + publisher.getPublisher_id() + " already exists");
         }
-        return publisherInventory.save(publisher);
+        return publisherRepository.save(publisher);
     }
     private boolean publisherAlreadyExists(Long id) {
-        return publisherInventory.findById(id).isPresent();
+        return publisherRepository.findById(id).isPresent();
     }
     @Override
     public List<Publisher> getAllPublishers() {
-        return publisherInventory.findAll();
+        return publisherRepository.findAll();
     }
 
     @Override
     public Publisher getPublisherById(Long id) {
-        if (!publisherInventory.findById(id).isPresent()) {
+        if (!publisherRepository.findById(id).isPresent()) {
             throw new UserNotFoundException("Publisher not found with id: " + id);
         }
-        return publisherInventory.findById(id).get();
+        return publisherRepository.findById(id).get();
     }
 
     @Override
     public Publisher getPublisherByCountry(String country) {
-        Optional<Publisher> publisher = publisherInventory.findPublisherByCountry(country);
+        Optional<Publisher> publisher = publisherRepository.findPublisherByCountry(country);
         if (!publisher.isPresent()) {
             throw new PublisherNotFoundException("Publisher not found from: " + country);
         }
@@ -59,7 +59,7 @@ public class PublisherService implements IPublisherService{
             throw new BookNotFoundException("Publisher with id " + id + " not found");
         }
         publisher.setPublisher_id(id);
-        return publisherInventory.save(publisher);
+        return publisherRepository.save(publisher);
     }
 
     @Override
@@ -67,6 +67,6 @@ public class PublisherService implements IPublisherService{
         if (!publisherAlreadyExists(id)){
             throw new BookNotFoundException("Publisher with id " + id + " not found");
         }
-        publisherInventory.deleteById(id);
+        publisherRepository.deleteById(id);
     }
 }
