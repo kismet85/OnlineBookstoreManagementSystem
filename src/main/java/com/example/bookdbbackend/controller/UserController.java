@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import com.example.bookdbbackend.model.User;
 import com.example.bookdbbackend.service.IUserService;
 
-
 import java.util.List;
 
 @RestController
@@ -24,5 +23,15 @@ public class UserController {
     public User addUser(@RequestBody User user)
     {
         return iUserService.addUser(user);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@RequestBody User user, @PathVariable Long id) {
+        try {
+            User updatedUser = iUserService.updateUser(user, id);
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

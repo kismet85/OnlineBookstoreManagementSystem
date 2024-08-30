@@ -23,7 +23,7 @@ public class User {
         private String email;
         private int street_number;
         private String street_name;
-        private int phone_number;
+        private long phone_number;
         private int postal_code;
         private String province;
         private String role;
