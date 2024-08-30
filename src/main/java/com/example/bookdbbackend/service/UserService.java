@@ -56,6 +56,9 @@ public class UserService implements IUserService {
 
     @Override
     public void deleteUser(Long id) {
-
+        if (!userRepository.findById(id).isPresent()) {
+            throw new UserNotFoundException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
     }
 }
