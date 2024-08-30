@@ -16,6 +16,20 @@ import java.util.List;
 public class UserController {
     private final IUserService iUserService;
 
+    private User mergeNewAndOldUserForUpdate(User existingUser, User newUser) {
+        // If the new user object has a value for a field, update the existing user object with that value
+        existingUser.setFirst_name(newUser.getFirst_name() != null ? newUser.getFirst_name() : existingUser.getFirst_name());
+        existingUser.setLast_name(newUser.getLast_name() != null ? newUser.getLast_name() : existingUser.getLast_name());
+        existingUser.setStreet_number(newUser.getStreet_number() != 0 ? newUser.getStreet_number() : existingUser.getStreet_number());
+        existingUser.setStreet_name(newUser.getStreet_name() != null ? newUser.getStreet_name() : existingUser.getStreet_name());
+        existingUser.setPhone_number(newUser.getPhone_number() != 0 ? newUser.getPhone_number() : existingUser.getPhone_number());
+        existingUser.setPostal_code(newUser.getPostal_code() != 0 ? newUser.getPostal_code() : existingUser.getPostal_code());
+        existingUser.setProvince(newUser.getProvince() != null ? newUser.getProvince() : existingUser.getProvince());
+        existingUser.setRole(newUser.getRole() != null ? newUser.getRole() : existingUser.getRole());
+        existingUser.setEmail(newUser.getEmail() != null ? newUser.getEmail() : existingUser.getEmail());
+        return existingUser;
+    }
+
     @GetMapping
     public ResponseEntity<List<User>> getUsers() {
         return new ResponseEntity<>(iUserService.getUsers(), HttpStatus.OK);
@@ -26,10 +40,13 @@ public class UserController {
         return iUserService.addUser(user);
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<User> updateUser(@RequestBody User user, @PathVariable Long id) {
         try {
-            User updatedUser = iUserService.updateUser(user, id);
+            User existingUser = iUserService.getUserById(id);
+            User mergedUser = mergeNewAndOldUserForUpdate(existingUser, user);
+            User updatedUser = iUserService.updateUser(mergedUser, id);
+
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -45,4 +62,6 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+
 }
