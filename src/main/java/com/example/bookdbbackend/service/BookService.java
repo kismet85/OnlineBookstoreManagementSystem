@@ -1,42 +1,96 @@
 package com.example.bookdbbackend.service;
 
 import com.example.bookdbbackend.exception.BookAlreadyExistsException;
+import com.example.bookdbbackend.exception.BookNotFoundException;
 import com.example.bookdbbackend.model.Book;
 import com.example.bookdbbackend.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BookService implements IBookService {
+
+    @Autowired
     private final BookRepository bookRepository;
     @Override
     public Book addBook(Book book) {
-        if (bookAlreadyExists(book.getId()))
+        if (bookAlreadyExists(book.getBook_id()))
         {
-            throw new BookAlreadyExistsException("Book with id " + book.getId() + " already exists");
+            throw new BookAlreadyExistsException("Book with id " + book.getBook_id() + " already exists");
         }
+        return bookRepository.save(book);
+    }
+
+    private boolean bookAlreadyExists(Long id) {
+        return bookRepository.findById(id).isPresent();
     }
 
     @Override
     public List<Book> getAllBooks() {
-        return null;
+        return bookRepository.findAll();
     }
 
     @Override
-    public Book getBookById(Long id) {
-        return null;
+    public  Book getBookById(Long id) {
+        Optional<Book> book = bookRepository.findById(id);
+        if (!book.isPresent()){
+            throw new BookNotFoundException("Book with id " + id + " not found");
+        }
+
+        return book.get();
     }
 
     @Override
-    public Book updateBook(Book book, Long id) {
-        return null;
+    public Book updateBook(Book book, Long id)
+    {
+        if (!bookAlreadyExists(id)){
+            throw new BookNotFoundException("Book with id " + id + " not found");
+        }
+        book.setBook_id(id);
+        return bookRepository.save(book);
     }
 
     @Override
     public void deleteBook(Long id) {
-
+        if (!bookAlreadyExists(id)){
+            throw new BookNotFoundException("Book with id " + id + " not found");
+        }
+        bookRepository.deleteById(id);
     }
+
+    @Override
+    public Book getBookByTitle(String title) {
+        Optional<Book> book = bookRepository.findByTitle(title);
+        if (!book.isPresent()){
+            throw new BookNotFoundException("Book with title " + title + " not found");
+        }
+        return book.get();
+        }
+
+
+
+    @Override
+    public Book getBookByIsbn(String isbn) {
+        Optional<Book> book = bookRepository.findBookByIsbn(isbn);
+        if (!book.isPresent()){
+            throw new BookNotFoundException("Book with isbn " + isbn + " not found");
+        }
+        return book.get();
+    }
+
+    @Override
+    public Book getBookByGenre(String genre) {
+        Optional<Book> book = bookRepository.findBookByGenre(genre);
+        if (!book.isPresent()){
+            throw new BookNotFoundException("Book with genre " + genre + " not found");
+        }
+        return book.get();
+    }
+
+
 }
