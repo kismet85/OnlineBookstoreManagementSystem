@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -16,6 +17,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PublisherController {
     private final IPublisherService iPublisherService;
+
+    private Publisher mergeNewAndOldPublisherForUpdate(Publisher existingPublisher, Publisher newPublisher) {
+        // If the new book object has a value for a field, update the existing book object with that value
+        existingPublisher.setCountry(newPublisher.getCountry() != null ? newPublisher.getCountry() : existingPublisher.getCountry());
+        return existingPublisher;
+    }
 
     @GetMapping
     public ResponseEntity<List<Publisher>> getAllPublishers() {
@@ -46,8 +53,11 @@ public class PublisherController {
     @PutMapping("/{id}")
     public ResponseEntity<Publisher> updatePublisher(@RequestBody Publisher publisher, @PathVariable Long id) {
         try {
-            Publisher updatePublisher = iPublisherService.updatePublisher(publisher, id);
-            return new ResponseEntity<>(updatePublisher, HttpStatus.OK);
+            Publisher existingPublisher = iPublisherService.getPublisherById(id);
+            Publisher mergedPublisher = mergeNewAndOldPublisherForUpdate(existingPublisher, publisher);
+            Publisher updatedPublisher = iPublisherService.updatePublisher(mergedPublisher, id);
+
+            return new ResponseEntity<>(updatedPublisher, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
