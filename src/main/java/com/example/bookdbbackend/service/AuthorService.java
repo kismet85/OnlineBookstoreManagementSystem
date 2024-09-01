@@ -34,4 +34,3 @@ public class AuthorService implements IAuthorService {
         return bookRepository.findBooksByAuthorId(id);
     }
 }
-
