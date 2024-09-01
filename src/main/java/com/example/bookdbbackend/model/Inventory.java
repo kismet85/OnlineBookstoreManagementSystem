@@ -14,7 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Inventory {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long inventory_id;
     private int stock_level_used;
     private int stock_level_new;
