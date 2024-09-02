@@ -26,5 +26,6 @@ public class User {
         private long phone_number;
         private int postal_code;
         private String province;
+        private String password;
         private String role;
 }

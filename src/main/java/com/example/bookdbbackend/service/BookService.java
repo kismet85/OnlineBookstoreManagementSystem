@@ -62,13 +62,13 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public Book getBookByTitle(String title) {
-        Optional<Book> book = bookRepository.findBookByTitle(title);
-        if (!book.isPresent()){
+    public List<Book> getBooksByTitle(String title) {
+        List<Book> books = bookRepository.findBooksByTitleContainingIgnoreCase(title);
+        if (books.isEmpty()){
             throw new BookNotFoundException("Book with title " + title + " not found");
         }
-        return book.get();
-        }
+        return books;
+    }
 
     @Override
     public List <Book> getBooksByAuthorId(Long author_id) {
@@ -85,12 +85,21 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public Book getBookByGenre(String genre) {
-        Optional<Book> book = bookRepository.findBookByGenre(genre);
-        if (!book.isPresent()){
+    public List<Book> getBooksByGenre(String genre) {
+        List<Book> books = bookRepository.findBooksByGenreContainingIgnoreCase(genre);
+        if (books.isEmpty()){
             throw new BookNotFoundException("Book with genre " + genre + " not found");
         }
-        return book.get();
+        return books;
+    }
+
+    @Override
+    public List<Book> getBooksByPublisher(String publisher) {
+        List<Book> books = bookRepository.findBooksByPublisherContainingIgnoreCase(publisher);
+        if (books.isEmpty()){
+            throw new BookNotFoundException("Book with publisher " + publisher + " not found");
+        }
+        return books;
     }
 
 

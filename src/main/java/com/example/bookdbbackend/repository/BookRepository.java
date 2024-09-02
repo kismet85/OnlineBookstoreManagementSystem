@@ -8,9 +8,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
-    Optional<Book> findBookByTitle(String name);
+    List<Book> findBooksByTitleContainingIgnoreCase(String title);
+
+    List<Book> findBooksByPublisherContainingIgnoreCase(String publisher);
+
+    List<Book> findBooksByGenreContainingIgnoreCase(String category);
+
     Optional<Book> findBookByIsbn(String isbn);
-    Optional<Book> findBookByGenre(String category);
 
     @Query("SELECT b FROM Book b JOIN b.writtenBy w JOIN w.author a WHERE a.author_id = :authorId")
     List<Book> findBooksByAuthorId(Long authorId);
