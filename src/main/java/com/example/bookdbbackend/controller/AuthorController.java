@@ -31,4 +31,14 @@ public class AuthorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/{id}/books")
+    public ResponseEntity<List<Book>> getBooksByAuthorId(@PathVariable Long id) {
+        try {
+            List<Book> books = iAuthorService.getBooksByAuthorId(id);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
