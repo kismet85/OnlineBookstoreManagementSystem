@@ -1,6 +1,5 @@
 package com.example.bookdbbackend.controller;
 
-import com.example.bookdbbackend.model.User;
 import com.example.bookdbbackend.service.IBookService;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,7 @@ import java.util.List;
 public class BookController {
     private final IBookService iBookService;
 
-    private Book mergeNewAndOldUserForUpdate(Book existingBook, Book newBook) {
+    private Book mergeNewAndOldBookForUpdate(Book existingBook, Book newBook) {
         // If the new book object has a value for a field, update the existing book object with that value
         existingBook.setTitle(newBook.getTitle() != null ? newBook.getTitle() : existingBook.getTitle());
         existingBook.setIsbn(newBook.getIsbn() != null ? newBook.getIsbn() : existingBook.getIsbn());
@@ -62,7 +61,7 @@ public class BookController {
     public ResponseEntity<Book> updateBook(@RequestBody Book book, @PathVariable Long id) {
         try {
             Book existingBook = iBookService.getBookById(id);
-            Book mergedBook = mergeNewAndOldUserForUpdate(existingBook, book);
+            Book mergedBook = mergeNewAndOldBookForUpdate(existingBook, book);
             Book updatedBook = iBookService.updateBook(mergedBook, id);
 
             return new ResponseEntity<>(updatedBook, HttpStatus.OK);
