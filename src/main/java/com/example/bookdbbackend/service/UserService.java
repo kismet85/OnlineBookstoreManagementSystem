@@ -13,24 +13,10 @@ import java.util.List;
 
 @Service
 public class UserService implements IUserService {
+
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @Override
-    public User registerUser(User user) {
-        if (userRepository.findById(user.getUser_id()).isPresent()) {
-            throw new
-                    UserAlreadyExistsException(user.getEmail() + " already exists!");
-        }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole("USER");
-        userRepository.save(user);
-        //TODO generate jwt token
-        return user;
-    }
 
     @Override
     public User getMe() {
@@ -38,15 +24,6 @@ public class UserService implements IUserService {
         return null;
     }
 
-    @Override
-    public User loginUser(String email, String password) {
-        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
-        if (passwordEncoder.matches(password, user.getPassword())) {
-            return user;
-        } else {
-            throw new InvalidModuleDescriptorException("Invalid password");
-        }
-    }
 
     @Override
     public List<User> getUsers() {

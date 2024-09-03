@@ -1,31 +1,42 @@
 package com.example.bookdbbackend.controller;
 
+import com.example.bookdbbackend.dtos.LoginUserDto;
+import com.example.bookdbbackend.dtos.RegisterUserDto;
 import com.example.bookdbbackend.model.User;
-import com.example.bookdbbackend.service.IUserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.example.bookdbbackend.responses.LoginResponse;
+import com.example.bookdbbackend.service.AuthenticationService;
+import com.example.bookdbbackend.service.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.function.ToDoubleBiFunction;
 
 @RequestMapping("/auth")
 @RestController
 public class AuthController {
+    private final JwtService jwtService;
+    private final AuthenticationService authenticationService;
 
-    @Autowired
-    private IUserService iUserService;
 
-    @PostMapping("/register")
-    public ResponseEntity<User> addUser(@RequestBody User user) {
-        User newUser = iUserService.registerUser(user);
-        //TODO generate jwt token
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    public AuthController(JwtService jwtService, AuthenticationService authenticationService) {
+        this.jwtService = jwtService;
+        this.authenticationService = authenticationService;
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<User> addUser(@RequestBody RegisterUserDto registerUserDto) {
+        User registeredUser = authenticationService.signUp(registerUserDto);
+        return ResponseEntity.ok(registeredUser);
     }
     @PostMapping("/login")
-    public ResponseEntity<User> loginUser(@RequestParam String email, @RequestParam String password) {
-        User loggedInUser = iUserService.loginUser(email, password);
-        //TODO generate jwt token
-        return new ResponseEntity<>(loggedInUser, HttpStatus.OK);
+    public ResponseEntity<LoginResponse> loginUser(@RequestParam LoginUserDto loginUserDto) {
+        User authenticatedUser = authenticationService.authenticate(loginUserDto);
+        String jwtToken = jwtService.generateToken(authenticatedUser);
+
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setToken(jwtToken);
+        loginResponse.setExpiresIn(jwtService.getExpirationTime());
+
+        return ResponseEntity.ok(loginResponse);
+
     }
 }
