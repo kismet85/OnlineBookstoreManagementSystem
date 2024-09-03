@@ -14,5 +14,4 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Query("SELECT b FROM Book b JOIN b.writtenBy w JOIN w.author a WHERE a.author_id = :authorId")
     List<Book> findBooksByAuthorId(Long authorId);
-
 }

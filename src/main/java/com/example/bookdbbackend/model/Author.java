@@ -17,7 +17,12 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long author_id;
 
-    private String first_name;
+    @Column(name = "first_name")
+    private String firstName;
 
-    private String last_name;
+    @Column(name = "last_name")
+    private String lastName;
+    public Long getId() {
+        return this.author_id;
+    }
 }
