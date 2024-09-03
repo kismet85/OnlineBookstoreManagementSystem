@@ -103,7 +103,7 @@ public class BookController {
     @GetMapping("/publisher/{publisher}")
     public ResponseEntity<List<Book>> getBooksByPublisher(@PathVariable String publisher) {
         try {
-            List<Book> books = iBookService.getBooksByPublisher(publisher);
+            List<Book> books = iBookService.getBooksByPublisherName(publisher);
             return new ResponseEntity<>(books, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

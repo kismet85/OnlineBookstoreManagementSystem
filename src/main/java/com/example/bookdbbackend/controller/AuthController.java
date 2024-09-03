@@ -28,5 +28,4 @@ public class AuthController {
         //TODO generate jwt token
         return new ResponseEntity<>(loggedInUser, HttpStatus.OK);
     }
-
 }
