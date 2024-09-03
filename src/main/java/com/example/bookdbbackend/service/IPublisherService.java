@@ -11,8 +11,8 @@ public interface IPublisherService {
     List<Publisher> getAllPublishers();
     Publisher getPublisherById(Long id);
 
-
-    Publisher getPublisherByCountry(String country);
+    List<Book> getBooksByPublisherCountry(String country);
+    List<Book> getBooksByPublisherName(String name);
     Publisher updatePublisher(Publisher publisher, Long id);
     void deletePublisher(Long id);
 }

@@ -20,4 +20,5 @@ public class Publisher {
     @Id
     private Long publisher_id;
     private String country;
+    private String name;
 }
