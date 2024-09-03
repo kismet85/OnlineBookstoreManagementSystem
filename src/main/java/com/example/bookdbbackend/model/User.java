@@ -33,7 +33,10 @@ public class User implements UserDetails {
         private int postal_code;
         private String province;
         private String password;
-        private String role;
+
+        @Column(nullable = false)
+        private String role = "USER";
+
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
