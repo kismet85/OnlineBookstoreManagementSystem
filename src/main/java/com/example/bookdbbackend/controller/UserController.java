@@ -36,9 +36,9 @@ public class UserController {
         return new ResponseEntity<>(iUserService.getUsers(), HttpStatus.OK);
     }
 
-    @PostMapping
-    public User addUser(@RequestBody User user) {
-        return iUserService.addUser(user);
+    @GetMapping("/me")
+    public ResponseEntity<User> getMe() {
+        return new ResponseEntity<>(iUserService.getMe(), HttpStatus.OK);
     }
 
     @PostMapping("/{id}")
