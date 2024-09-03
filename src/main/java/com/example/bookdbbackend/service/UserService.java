@@ -28,9 +28,15 @@ public class UserService implements IUserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("USER");
         userRepository.save(user);
-        String token = generateJwtToken(user);
+        //TODO generate jwt token
+        return user;
     }
 
+    @Override
+    public User getMe() {
+        //TODO get the current user from the security context
+        return null;
+    }
 
     @Override
     public User loginUser(String email, String password) {
