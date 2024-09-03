@@ -15,5 +15,5 @@ public interface IBookService {
     Book getBookByIsbn(String isbn);
     List<Book> getBooksByGenre(String genre);
 
-    List<Book> getBooksByPublisher(String publisher);
+    List<Book> getBooksByPublisherName(String publisher);
 }

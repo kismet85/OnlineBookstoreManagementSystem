@@ -94,8 +94,8 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public List<Book> getBooksByPublisher(String publisher) {
-        List<Book> books = bookRepository.findBooksByPublisherContainingIgnoreCase(publisher);
+    public List<Book> getBooksByPublisherName(String publisher) {
+        List<Book> books = bookRepository.findBooksByPublisherName(publisher);
         if (books.isEmpty()){
             throw new BookNotFoundException("Book with publisher " + publisher + " not found");
         }
