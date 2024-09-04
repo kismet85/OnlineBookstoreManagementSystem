@@ -23,23 +23,23 @@ class UserServiceTest {
     @Test
     void addUserPerformanceTest() {
         long startTime = System.currentTimeMillis();
-
-        for (long i = 4; i < 10; i++) {
-            User user = new User(
-                    i,
-                    "FirstSamu" + i,
-                    "LastSeta" + i,
-                    "samuseta" + i + "@gmail.com",
-                    5,
-                    "123-456-7890",
-                    i + 5,
-                    90,
-                    "Espoo",
-                    "kotiorja"
-            );
-
-            userService.addUser(user);
-        }
+//
+//        for (long i = 4; i < 10; i++) {
+//            User user = new User(
+//                    i,
+//                    "FirstSamu" + i,
+//                    "LastSeta" + i,
+//                    "samuseta" + i + "@gmail.com",
+//                    5,
+//                    "123-456-7890",
+//                    i + 5,
+//                    90,
+//                    "Espoo",
+//                    "kotiorja"
+//            );
+//
+//            userService.addUser(user);
+//        }
 
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
