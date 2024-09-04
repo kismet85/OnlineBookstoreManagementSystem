@@ -2,6 +2,7 @@ package com.example.bookdbbackend.service;
 
 import com.example.bookdbbackend.dtos.LoginUserDto;
 import com.example.bookdbbackend.dtos.RegisterUserDto;
+import com.example.bookdbbackend.exception.UserAlreadyExistsException;
 import com.example.bookdbbackend.model.User;
 import com.example.bookdbbackend.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,10 @@ public class AuthenticationService {
     }
 
     public User signUp(RegisterUserDto input) {
+        if(userRepository.existsUserByEmail(input.getEmail())){
+            throw new UserAlreadyExistsException("Email already in use");
+        }
+
         User user = new User();
         user.setEmail(input.getEmail());
         user.setFirst_name(input.getFirst_name());
