@@ -32,7 +32,7 @@ public class SecurityConfiguration {
         http
                 .csrf((csrf) -> csrf.disable())
                 .authenticationProvider(authenticationProvider)
-                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
