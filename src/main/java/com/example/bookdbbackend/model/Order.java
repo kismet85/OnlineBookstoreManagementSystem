@@ -19,7 +19,6 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long order_id;
-    private int shipping;
     private BigDecimal total;
 
     @ManyToOne
