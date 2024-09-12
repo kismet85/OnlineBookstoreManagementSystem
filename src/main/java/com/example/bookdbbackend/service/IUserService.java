@@ -11,7 +11,8 @@ public interface IUserService {
 
         User getUserById(Long id);
 
-        User getMe();
+        User getUserByEmail(String email);
+
 
         void deleteUser(Long id);
 }
