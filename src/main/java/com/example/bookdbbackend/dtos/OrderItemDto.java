@@ -1,4 +1,4 @@
-package com.example.bookdbbackend.controller;
+package com.example.bookdbbackend.dtos;
 
 import com.example.bookdbbackend.model.Book;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class OrderItemDto {
-    private Book book;
+    private Long book_id;
     private int quantity;
     private BigDecimal price;
 }
