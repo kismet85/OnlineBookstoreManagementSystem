@@ -36,11 +36,6 @@ public class UserController {
         return new ResponseEntity<>(iUserService.getUsers(), HttpStatus.OK);
     }
 
-    @PostMapping
-    public User addUser(@RequestBody User user) {
-        return iUserService.addUser(user);
-    }
-
     @PostMapping("/{id}")
     public ResponseEntity<User> updateUser(@RequestBody User user, @PathVariable Long id) {
         try {

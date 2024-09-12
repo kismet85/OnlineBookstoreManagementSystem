@@ -4,12 +4,15 @@ import com.example.bookdbbackend.exception.BookAlreadyExistsException;
 import com.example.bookdbbackend.exception.BookNotFoundException;
 import com.example.bookdbbackend.exception.PublisherNotFoundException;
 import com.example.bookdbbackend.exception.UserNotFoundException;
+import com.example.bookdbbackend.model.Book;
 import com.example.bookdbbackend.model.Publisher;
 import com.example.bookdbbackend.repository.PublisherRepository;
+import com.example.bookdbbackend.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +22,9 @@ public class PublisherService implements IPublisherService{
 
     @Autowired
     private final PublisherRepository publisherRepository;
+
+    @Autowired
+    private final BookRepository bookRepository;
 
     @Override
     public Publisher addPublisher(Publisher publisher) {
@@ -45,12 +51,34 @@ public class PublisherService implements IPublisherService{
     }
 
     @Override
-    public Publisher getPublisherByCountry(String country) {
-        Optional<Publisher> publisher = publisherRepository.findPublisherByCountry(country);
-        if (!publisher.isPresent()) {
-            throw new PublisherNotFoundException("Publisher not found from: " + country);
+    public List<Book> getBooksByPublisherName(String name) {
+        List<Publisher> publishers = publisherRepository.findPublisherByName(name);
+        if (publishers.isEmpty()) {
+            throw new PublisherNotFoundException("Publisher not found with name: " + name);
         }
-        return publisher.get();
+
+        List<Book> books = new ArrayList<>();
+        for (Publisher publisher : publishers) {
+            books.addAll(bookRepository.findBooksByPublisherId(publisher.getPublisher_id()));
+        }
+
+        return books;
+    }
+
+
+    @Override
+    public List<Book> getBooksByPublisherCountry(String country) {
+        List<Publisher> publishers = publisherRepository.findPublisherByCountry(country);
+        if (publishers.isEmpty()) {
+            throw new PublisherNotFoundException("Publisher not found from country: " + country);
+        }
+
+        List<Book> books = new ArrayList<>();
+        for (Publisher publisher : publishers) {
+            books.addAll(bookRepository.findBooksByPublisherId(publisher.getPublisher_id()));
+        }
+
+        return books;
     }
 
     @Override

@@ -69,4 +69,43 @@ public class BookController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/title/{title}")
+    public ResponseEntity<List<Book>> getBooksByTitle(@PathVariable String title) {
+        try {
+            List<Book> books = iBookService.getBooksByTitle(title);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/isbn/{isbn}")
+    public ResponseEntity<Book> getBookByIsbn(@PathVariable String isbn) {
+        try {
+            Book book = iBookService.getBookByIsbn(isbn);
+            return new ResponseEntity<>(book, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/genre/{genre}")
+    public ResponseEntity<List<Book>> getBooksByGenre(@PathVariable String genre) {
+        try {
+            List<Book> books = iBookService.getBooksByGenre(genre);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/publisher/{publisher}")
+    public ResponseEntity<List<Book>> getBooksByPublisher(@PathVariable String publisher) {
+        try {
+            List<Book> books = iBookService.getBooksByPublisherName(publisher);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
