@@ -17,14 +17,6 @@ public class UserService implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
-
-    @Override
-    public User getMe() {
-        //TODO get the current user from the security context
-        return null;
-    }
-
-
     @Override
     public List<User> getUsers() {
         return userRepository.findAll();
@@ -53,5 +45,10 @@ public class UserService implements IUserService {
             throw new UserNotFoundException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
     }
 }
