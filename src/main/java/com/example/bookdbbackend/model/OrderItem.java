@@ -1,5 +1,6 @@
 package com.example.bookdbbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class OrderItem {
     @Id
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
+    @JsonBackReference
     private Order order;
 
     @Id
@@ -29,6 +31,7 @@ public class OrderItem {
     private Book book;
 
     private int quantity;
+
     private BigDecimal price;
 
     @Getter

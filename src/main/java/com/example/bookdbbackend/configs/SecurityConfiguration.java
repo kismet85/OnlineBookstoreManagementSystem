@@ -37,6 +37,7 @@ public class SecurityConfiguration {
                         authorizeRequests
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/authors").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/orders/addOrder").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/users/me").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books/title/{title}").permitAll()
