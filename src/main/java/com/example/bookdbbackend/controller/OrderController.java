@@ -1,63 +1,44 @@
 package com.example.bookdbbackend.controller;
 
+import com.example.bookdbbackend.controller.OrderItemDto;
 import com.example.bookdbbackend.model.Order;
-import com.example.bookdbbackend.service.IOrderService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import com.example.bookdbbackend.model.OrderItem;
+import com.example.bookdbbackend.repository.OrderItemRepository;
+import com.example.bookdbbackend.repository.OrderRepository;
+import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/orders")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
 public class OrderController {
-    private final IOrderService iOrderService;
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
 
-    private Order mergeNewAndOrderForUpdate(Order existingOrder, Order newOrder) {
-        // If the new order object has a value for a field, update the existing order object with that value
-        existingOrder.setOrder_id(newOrder.getOrder_id() != null ? newOrder.getOrder_id() : existingOrder.getOrder_id());
-        existingOrder.setOrderDate(newOrder.getOrderDate() != null ? newOrder.getOrderDate() : existingOrder.getOrderDate());
-        existingOrder.setTotal(newOrder.getTotal() != null ? newOrder.getTotal() : existingOrder.getTotal());
-        existingOrder.setUser(newOrder.getUser() != null ? newOrder.getUser() : existingOrder.getUser());
-        return existingOrder;
+    public OrderController(OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Order>> getOrders() {
-        return new ResponseEntity<>(iOrderService.getAllOrders(), HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        try {
-            Order order = iOrderService.getOrderById(id);
-            return new ResponseEntity<>(order, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PostMapping("/addOrder")
+    public ResponseEntity<Order> addOrder(@RequestBody OrderDto orderDto) {
+        Order order = new Order();
+        order.setOrderDate(LocalDate.now());
+        order = orderRepository.save(order);
+        for (OrderItemDto orderItemDto : orderDto.getOrderItems()) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setBook(orderItemDto.getBook());
+            orderItem.setQuantity(orderItemDto.getQuantity());
+            orderItem.setPrice(orderItemDto.getPrice());
+            orderItemRepository.save(orderItem);
         }
-    }
 
-    @PostMapping
-    public Order addOrder(@RequestBody Order order) {
-        return iOrderService.addOrder(order);
-    }
-
-    @PostMapping("/{id}")
-    public Order updateOrder(@RequestBody Order order, @PathVariable Long id) {
-        return iOrderService.updateOrder(order, id);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteOrder(@PathVariable Long id) {
-        iOrderService.deleteOrder(id);
-    }
-
-    @GetMapping("/user/{user_id}")
-    public ResponseEntity<List<Order>> getOrdersByUserId(@PathVariable Long user_id) {
-        List<Order> orders = iOrderService.getOrdersByUserId(user_id);
-        return new ResponseEntity<>(orders, HttpStatus.OK);
+        return ResponseEntity.ok(order);
     }
 }

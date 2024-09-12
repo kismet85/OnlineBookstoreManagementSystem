@@ -1,15 +1,30 @@
-POST http://localhost:8080/users
+POST http://localhost:8080/orders/addOrder
 Content-Type: application/json
 
 {
-  "id": 1,
-  "first_name": "John",
-  "last_name": "Doe",
-  "email": "john.doe@example.com",
-  "street_number": 123,
-  "street_name": "Main Street",
-  "phone_number": 555123456,
-  "postal_code": 90210,
-  "province": "California",
-  "role": "Admin"
+  "orderItems": [
+    {
+      "book": {
+        "id": 1,
+        "title": "Book Title",
+        "author": "Book Author",
+        "price": 19.99
+      },
+      "quantity": 2,
+      "price": 39.98
+    },
+    {
+      "book": {
+        "id": 2,
+        "title": "Another Book Title",
+        "author": "Another Book Author",
+        "price": 29.99
+      },
+      "quantity": 1,
+      "price": 29.99
+    }
+  ]
 }
+
+
+
