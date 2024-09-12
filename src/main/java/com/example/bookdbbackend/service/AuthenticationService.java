@@ -44,4 +44,5 @@ public class AuthenticationService {
             return userRepository.findUserByEmail(input.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
 }
