@@ -5,21 +5,17 @@ import com.example.bookdbbackend.model.User;
 import com.example.bookdbbackend.repository.UserRepository;
 import com.example.bookdbbackend.exception.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.lang.module.InvalidModuleDescriptorException;
 import java.util.List;
 
 @Service
 public class UserService implements IUserService {
+
     @Autowired
     private UserRepository userRepository;
-    @Override
-    public User addUser(User user) {
-        if (userRepository.findById(user.getUser_id()).isPresent()) { throw new
-                UserAlreadyExistsException(user.getEmail() + " already exists!");
-        }
-            return userRepository.save(user);
-    }
 
     @Override
     public List<User> getUsers() {
@@ -49,5 +45,10 @@ public class UserService implements IUserService {
             throw new UserNotFoundException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
     }
 }

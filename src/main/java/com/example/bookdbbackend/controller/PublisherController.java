@@ -30,6 +30,17 @@ public class PublisherController {
         return new ResponseEntity<>(iPublisherService.getAllPublishers(), HttpStatus.OK);
     }
 
+    @GetMapping("/{name}/books")
+    public ResponseEntity<List<Book>> getBooksByPublisherName(@PathVariable String name) {
+        List<Book> books = iPublisherService.getBooksByPublisherName(name);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
+    @GetMapping("/country/{country}/books")
+    public ResponseEntity<List<Book>> getBooksByPublisherCountry(@PathVariable String country) {
+        List<Book> books = iPublisherService.getBooksByPublisherCountry(country);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
     @GetMapping("/publishers/{id}")
     public ResponseEntity<Publisher> getPublisherById(@PathVariable Long id) {
         try {
@@ -40,11 +51,11 @@ public class PublisherController {
         }
     }
 
-   /* @GetMapping("/publishers/{publisher_id}")
-    public ResponseEntity<List<Publisher>> getBooksByPublisherId(@PathVariable Long publisher_id) {
-        List<Publisher> publisher = iPublisherService.getAllPublishers(publisher_id);
-        return new ResponseEntity<>(publisher, HttpStatus.FOUND);
-    }*/
+   @GetMapping("/publishers/{name}")
+    public ResponseEntity<List<Book>> getBooksByPublisherId(@PathVariable String name) {
+        List<Book> publisherBooks = iPublisherService.getBooksByPublisherName(name);
+        return new ResponseEntity<>(publisherBooks, HttpStatus.OK);
+    }
 
     @PostMapping
     public Publisher addPublisher(@RequestBody Publisher publisher) {
