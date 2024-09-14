@@ -1,5 +1,6 @@
 package com.example.bookdbbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,9 +18,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long order_id;
+
+    @Column(name = "total", columnDefinition = "DECIMAL(10,2)")
     private BigDecimal total;
 
     @ManyToOne
@@ -30,5 +34,6 @@ public class Order {
     private LocalDate orderDate;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<OrderItem> orderItems;
 }
