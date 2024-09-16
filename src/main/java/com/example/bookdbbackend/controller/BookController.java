@@ -46,6 +46,13 @@ public class BookController {
         }
     }
 
+    @GetMapping("/search/{searchTerm}")
+    public ResponseEntity<List<Book>> searchBooks(@PathVariable String searchTerm) {
+        List<Book> books = iBookService.searchBooks(searchTerm);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
+
     @GetMapping("/author/{author_id}")
     public ResponseEntity<List<Book>> getBooksByAuthorId(@PathVariable Long author_id) {
         List<Book> books = iBookService.getBooksByAuthorId(author_id);

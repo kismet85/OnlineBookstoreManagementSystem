@@ -6,6 +6,9 @@ import com.example.bookdbbackend.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,6 +103,35 @@ public class BookService implements IBookService {
             throw new BookNotFoundException("Book with publisher " + publisher + " not found");
         }
         return books;
+    }
+
+    @Override
+    public List<Book> searchBooks(String searchTerm) {
+
+        List<Book> booksByTitle = bookRepository.findBooksByTitleContainingIgnoreCase(searchTerm);
+        List<Book> booksByPublisher = bookRepository.findBooksByPublisherName(searchTerm);
+        List<Book> booksByGenre = bookRepository.findBooksByGenreContainingIgnoreCase(searchTerm);
+        List<Book> booksByIsbn = bookRepository.findBooksByIsbnContainingIgnoreCase(searchTerm);
+
+        if (searchTerm.length() < 3)
+        {
+            throw new IllegalArgumentException("Search term must be at least 3 characters long");
+        }
+
+        if (!booksByIsbn.isEmpty())
+        {
+            return booksByIsbn;
+        }
+
+        List<Book> combinedResults = new ArrayList<>();
+
+        combinedResults.addAll(booksByTitle);
+        combinedResults.addAll(booksByPublisher);
+        combinedResults.addAll(booksByGenre);
+
+        combinedResults = new ArrayList<>(new HashSet<>(combinedResults));
+
+        return combinedResults;
     }
 
 

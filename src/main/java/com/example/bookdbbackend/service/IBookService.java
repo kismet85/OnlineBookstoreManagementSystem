@@ -16,4 +16,6 @@ public interface IBookService {
     List<Book> getBooksByGenre(String genre);
 
     List<Book> getBooksByPublisherName(String publisher);
+
+    List<Book> searchBooks(String searchTerm);
 }
