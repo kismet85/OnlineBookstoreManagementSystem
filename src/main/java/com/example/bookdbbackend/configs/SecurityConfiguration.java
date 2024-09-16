@@ -42,7 +42,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET, "/authors").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/orders/addOrder").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/books/search/{searchTerm}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/books/search").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/users/me").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books/title/{title}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books/genre/{genre}").permitAll()
@@ -59,7 +59,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5174"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);

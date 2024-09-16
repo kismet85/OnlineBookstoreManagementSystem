@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
 public class BookController {
     private final IBookService iBookService;
 
@@ -47,8 +46,8 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Book>> searchBooks(@RequestParam String searchTerm) {
-        List<Book> books = iBookService.searchBooks(searchTerm);
+    public ResponseEntity<List<Book>> searchBooks(@RequestParam String query) {
+        List<Book> books = iBookService.searchBooks(query);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
