@@ -83,7 +83,7 @@ This project was collaboratively developed by:
 
 4. **Access the Application**:
 
-### ***Open your browser and go to http://localhost:3000 for the frontend.***
+### ***Open your browser and go to http://localhost:5173 for the frontend.***
 ## ***The backend should be running at http://localhost:8080.***
 # Usage
 **Customer Interface: Browse books, add them to your cart, and proceed to purchase or loan them.
