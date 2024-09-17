@@ -35,6 +35,8 @@ public class Book {
 
     private boolean reserved;
 
+    private String image_url;
+
     @ManyToOne
     @JoinColumn(name = "inventory_id")
     private Inventory inventory;
