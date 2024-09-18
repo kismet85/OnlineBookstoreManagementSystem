@@ -1,6 +1,9 @@
 package com.example.bookdbbackend.controller;
 
 import com.example.bookdbbackend.exception.UserNotFoundException;
+import com.example.bookdbbackend.service.JwtService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,8 +19,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
-    private final IUserService iUserService;
 
+    private final IUserService iUserService;
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
 
 
     @GetMapping
@@ -26,7 +31,15 @@ public class UserController {
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<User> updateUser(@RequestBody Map<String, Object> updates, @PathVariable Long id) {
+    public ResponseEntity<User> updateUser(@RequestBody Map<String, Object> updates, @PathVariable Long id, @RequestHeader("Authorization") String token) {
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         try {
             User updatedUser = iUserService.updateUser(updates, id);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
