@@ -11,4 +11,5 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o JOIN o.user u WHERE u.user_id = :user_id")
     List<Order> findOrdersByUserId(Long user_id);
+
 }

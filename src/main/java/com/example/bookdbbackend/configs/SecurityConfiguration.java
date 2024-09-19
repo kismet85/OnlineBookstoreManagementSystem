@@ -41,6 +41,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/authors").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/orders/addOrder").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/orders/me").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books/search").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/users/me").permitAll()
