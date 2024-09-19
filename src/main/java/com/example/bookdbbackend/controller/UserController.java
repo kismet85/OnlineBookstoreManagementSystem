@@ -1,6 +1,9 @@
 package com.example.bookdbbackend.controller;
 
 import com.example.bookdbbackend.exception.UserNotFoundException;
+import com.example.bookdbbackend.service.JwtService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -8,41 +11,52 @@ import org.springframework.http.ResponseEntity;
 import com.example.bookdbbackend.model.User;
 import com.example.bookdbbackend.service.IUserService;
 
+
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
-    private final IUserService iUserService;
 
-    private User mergeNewAndOldUserForUpdate(User existingUser, User newUser) {
-        // If the new user object has a value for a field, update the existing user object with that value
-        existingUser.setFirst_name(newUser.getFirst_name() != null ? newUser.getFirst_name() : existingUser.getFirst_name());
-        existingUser.setLast_name(newUser.getLast_name() != null ? newUser.getLast_name() : existingUser.getLast_name());
-        existingUser.setStreet_number(newUser.getStreet_number() != 0 ? newUser.getStreet_number() : existingUser.getStreet_number());
-        existingUser.setStreet_name(newUser.getStreet_name() != null ? newUser.getStreet_name() : existingUser.getStreet_name());
-        existingUser.setPhone_number(newUser.getPhone_number() != 0 ? newUser.getPhone_number() : existingUser.getPhone_number());
-        existingUser.setPostal_code(newUser.getPostal_code() != 0 ? newUser.getPostal_code() : existingUser.getPostal_code());
-        existingUser.setProvince(newUser.getProvince() != null ? newUser.getProvince() : existingUser.getProvince());
-        existingUser.setRole(newUser.getRole() != null ? newUser.getRole() : existingUser.getRole());
-        existingUser.setEmail(newUser.getEmail() != null ? newUser.getEmail() : existingUser.getEmail());
-        return existingUser;
-    }
+    private final IUserService iUserService;
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
+
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<List<User>> getUsers(@RequestHeader("Authorization") String token) {
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         return new ResponseEntity<>(iUserService.getUsers(), HttpStatus.OK);
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<User> updateUser(@RequestBody User user, @PathVariable Long id) {
-        try {
-            User existingUser = iUserService.getUserById(id);
-            User mergedUser = mergeNewAndOldUserForUpdate(existingUser, user);
-            User updatedUser = iUserService.updateUser(mergedUser, id);
+    @PostMapping("/update/{id}")
+    public ResponseEntity<User> updateUser(@RequestBody Map<String, Object> updates, @PathVariable Long id, @RequestHeader("Authorization") String token) {
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        try {
+            User updatedUser = iUserService.updateUser(updates, id);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

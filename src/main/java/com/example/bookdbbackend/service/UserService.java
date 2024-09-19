@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.module.InvalidModuleDescriptorException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService implements IUserService {
@@ -17,17 +18,49 @@ public class UserService implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Override
     public List<User> getUsers() {
         return userRepository.findAll();
     }
 
     @Override
-    public User updateUser(User user, Long id) {
-        if (!userRepository.findById(id).isPresent()) {
-            throw new UserNotFoundException("User not found with id: " + id);
+    public User updateUser(Map<String, Object> updates, Long id) {
+        User user = getUserById(id);
+        for (Map.Entry<String, Object> entry : updates.entrySet()) {
+            switch (entry.getKey()) {
+                case "first_name":
+                    user.setFirst_name((String) entry.getValue());
+                    break;
+                case "last_name":
+                    user.setLast_name((String) entry.getValue());
+                    break;
+                case "street_number":
+                    user.setStreet_number((Integer) entry.getValue());
+                    break;
+                case "street_name":
+                    user.setStreet_name((String) entry.getValue());
+                    break;
+                case "phone_number":
+                    user.setPhone_number((Long) entry.getValue());
+                    break;
+                case "postal_code":
+                    user.setPostal_code((Integer) entry.getValue());
+                    break;
+                case "province":
+                    user.setProvince((String) entry.getValue());
+                    break;
+                case "password":
+                    String encodedPassword = bCryptPasswordEncoder.encode((String) entry.getValue());
+                    user.setPassword(encodedPassword);
+                    break;
+                case "email":
+                    user.setEmail((String) entry.getValue());
+                    break;
+            }
         }
-        user.setUser_id(id);
         return userRepository.save(user);
     }
 

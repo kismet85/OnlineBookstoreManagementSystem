@@ -44,6 +44,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET, "/books").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books/search").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/users/me").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/users/update/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books/title/{title}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books/genre/{genre}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books/publisher/{publisher}").permitAll()
