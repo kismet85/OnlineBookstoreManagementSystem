@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import com.example.bookdbbackend.model.User;
 import com.example.bookdbbackend.service.IUserService;
 
+
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,21 @@ public class UserController {
 
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<List<User>> getUsers(@RequestHeader("Authorization") String token) {
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         return new ResponseEntity<>(iUserService.getUsers(), HttpStatus.OK);
     }
 
