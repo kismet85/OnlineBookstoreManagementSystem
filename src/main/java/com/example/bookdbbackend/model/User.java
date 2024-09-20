@@ -29,7 +29,7 @@ public class User implements UserDetails {
         private String email;
         private Integer street_number;
         private String street_name;
-        private Long phone_number;
+        private String phone_number;
         private Integer postal_code;
         private String province;
         private String password;
