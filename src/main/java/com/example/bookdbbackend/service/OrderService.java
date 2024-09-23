@@ -21,12 +21,11 @@ public class OrderService implements IOrderService {
     private final OrderRepository orderRepository;
     @Override
     public Order addOrder(Order order) {
-        if (orderAlreadyExists(order.getOrder_id())) {
+        if (order.getOrder_id() != null && orderAlreadyExists(order.getOrder_id())) {
             throw new OrderAlreadyExistsException("Order with id " + order.getOrder_id() + " already exists");
         }
         return orderRepository.save(order);
     }
-
     private boolean orderAlreadyExists(Long id) {
         return orderRepository.findById(id).isPresent();
     }

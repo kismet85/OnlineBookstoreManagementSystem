@@ -14,7 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class OrderController {
     private final BookService bookService;
     private final OrderService orderService;
 
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
     public OrderController(OrderRepository orderRepository, OrderItemRepository orderItemRepository, IUserService iUserService, JwtService jwtService, UserDetailsService userDetailsService, UserService userService, BookService bookService, OrderService orderService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
@@ -80,13 +82,37 @@ public class OrderController {
     }
 
     @PostMapping("/addOrder")
-    public ResponseEntity<Order> addOrder(@RequestBody OrderDto orderDto) {
-        User user = userService.getUserById(orderDto.getUser_id());
+    public ResponseEntity<Order> addOrder(@RequestBody OrderDto orderDto, @RequestHeader("Authorization") String token){
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        logger.info("User ID: {}", orderDto.getUser_id());
+        User user = userService.getUserById(orderDto.getUser_id());
+        logger.info("User email: {}", user.getEmail());
+
+        logger.info("Creating new order for user ID: {}", orderDto.getUser_id());
         Order order = new Order();
         order.setUser(user);
         order.setOrderDate(LocalDate.now());
-        order = orderService.addOrder(order);
+
+        try {
+            logger.info("Saving order to database...");
+            order = orderService.addOrder(order);
+        } catch (Exception e) {
+            logger.error("Error while saving order to database", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (order != null && order.getOrder_id() != null) {
+            logger.info("Order saved with ID: {}", order.getOrder_id());
+        } else {
+            logger.info("Order not saved. Check the addOrder method in the orderService.");
+        }
 
 
         List<OrderItem> orderItems = new ArrayList<>();
