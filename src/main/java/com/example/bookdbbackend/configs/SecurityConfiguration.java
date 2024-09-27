@@ -41,6 +41,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/authors").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/orders/addOrder").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/orders/me").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/books/search").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/users/me").permitAll()
@@ -52,6 +53,8 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET, "/books/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/authors/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/authors/{id}/books").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/inventory/{id}").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/inventory/{id}").permitAll()
                                 .anyRequest().hasRole("ADMIN")
                 );
         return http.build();
@@ -60,7 +63,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5174"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);

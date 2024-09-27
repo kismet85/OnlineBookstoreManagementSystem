@@ -1,10 +1,14 @@
 package com.example.bookdbbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "authors")
@@ -22,7 +26,9 @@ public class Author {
 
     @Column(name = "last_name")
     private String lastName;
-    public Long getId() {
-        return this.author_id;
-    }
+
+    @ManyToMany(mappedBy = "authors")
+    @JsonBackReference
+    private Set<Book> books = new HashSet<>();
+
 }

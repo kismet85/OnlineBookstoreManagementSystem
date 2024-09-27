@@ -44,7 +44,7 @@ public class UserService implements IUserService {
                     user.setStreet_name((String) entry.getValue());
                     break;
                 case "phone_number":
-                    user.setPhone_number((Long) entry.getValue());
+                    user.setPhone_number((String) entry.getValue());
                     break;
                 case "postal_code":
                     user.setPostal_code((Integer) entry.getValue());

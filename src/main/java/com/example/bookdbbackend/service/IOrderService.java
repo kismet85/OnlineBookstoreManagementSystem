@@ -1,7 +1,6 @@
 package com.example.bookdbbackend.service;
-
-import com.example.bookdbbackend.model.Book;
 import com.example.bookdbbackend.model.Order;
+
 import java.util.List;
 
 public interface IOrderService {

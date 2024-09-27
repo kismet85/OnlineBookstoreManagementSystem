@@ -1,5 +1,6 @@
 package com.example.bookdbbackend.service;
 
+import com.example.bookdbbackend.dtos.RegisterUserDto;
 import com.example.bookdbbackend.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class UserServiceTest {
     @Autowired
-    IUserService userService; // Real service implementation
+    AuthenticationService userService; // Real service implementation
 
     @BeforeEach
     void setUp() {
@@ -23,23 +24,16 @@ class UserServiceTest {
     @Test
     void addUserPerformanceTest() {
         long startTime = System.currentTimeMillis();
-//
-//        for (long i = 4; i < 10; i++) {
-//            User user = new User(
-//                    i,
-//                    "FirstSamu" + i,
-//                    "LastSeta" + i,
-//                    "samuseta" + i + "@gmail.com",
-//                    5,
-//                    "123-456-7890",
-//                    i + 5,
-//                    90,
-//                    "Espoo",
-//                    "kotiorja"
-//            );
-//
-//            userService.addUser(user);
-//        }
+
+
+        for (long i = 1; i < 2; i++) {
+            RegisterUserDto user = new RegisterUserDto(
+
+            );
+
+
+            userService.signUp(user);
+        }
 
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;

@@ -1,6 +1,10 @@
 package com.example.bookdbbackend.controller;
 
 import com.example.bookdbbackend.service.IBookService;
+import com.example.bookdbbackend.service.IUserService;
+import com.example.bookdbbackend.service.JwtService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,30 +13,23 @@ import com.example.bookdbbackend.model.Book;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
 public class BookController {
     private final IBookService iBookService;
-
-    private Book mergeNewAndOldBookForUpdate(Book existingBook, Book newBook) {
-        // If the new book object has a value for a field, update the existing book object with that value
-        existingBook.setTitle(newBook.getTitle() != null ? newBook.getTitle() : existingBook.getTitle());
-        existingBook.setIsbn(newBook.getIsbn() != null ? newBook.getIsbn() : existingBook.getIsbn());
-        existingBook.setGenre(newBook.getGenre() != null ? newBook.getGenre() : existingBook.getGenre());
-        existingBook.setType(newBook.getType() != null ? newBook.getType() : existingBook.getType());
-        existingBook.setPublication_year(newBook.getPublication_year() != 0 ? newBook.getPublication_year() : existingBook.getPublication_year());
-        existingBook.setPrice(newBook.getPrice() != null && !newBook.getPrice().equals(BigDecimal.ZERO) ? newBook.getPrice() : existingBook.getPrice());
-        existingBook.setReserved(newBook.isReserved() && existingBook.isReserved());
-        existingBook.setInventory(newBook.getInventory() != null ? newBook.getInventory() : existingBook.getInventory());
-        existingBook.setPublisher(newBook.getPublisher() != null ? newBook.getPublisher() : existingBook.getPublisher());
-        return existingBook;
-    }
-
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
     @GetMapping
     public ResponseEntity<List<Book>> getBooks() {
-        return new ResponseEntity<>(iBookService.getAllBooks(), HttpStatus.OK);
+        try {
+            List<Book> books = iBookService.getAllBooks();
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/{id}")
@@ -64,12 +61,25 @@ public class BookController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@RequestBody Book book, @PathVariable Long id) {
-        try {
-            Book existingBook = iBookService.getBookById(id);
-            Book mergedBook = mergeNewAndOldBookForUpdate(existingBook, book);
-            Book updatedBook = iBookService.updateBook(mergedBook, id);
+    public ResponseEntity<Book> updateBook(@RequestBody Map<String, Object> updates, @PathVariable Long id, @RequestHeader("Authorization") String token) {
 
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        try {
+            Book updatedBook = iBookService.updateBook(updates, id);
             return new ResponseEntity<>(updatedBook, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

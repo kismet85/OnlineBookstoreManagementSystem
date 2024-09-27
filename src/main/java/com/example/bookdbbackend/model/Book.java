@@ -1,6 +1,7 @@
 package com.example.bookdbbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -48,4 +50,13 @@ public class Book {
     @OneToMany(mappedBy = "book")
     @JsonIgnore
     private Set<WrittenBy> writtenBy;
+
+    @ManyToMany
+    @JoinTable(
+            name = "written_by",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    @JsonManagedReference
+    private Set<Author> authors = new HashSet<>();
 }

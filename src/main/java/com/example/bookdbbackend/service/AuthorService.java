@@ -40,6 +40,6 @@ public class AuthorService implements IAuthorService {
     public List<Book> getBooksByAuthorName(String firstName, String lastName) {
         Author author = authorRepository.findByFirstNameAndLastName(firstName, lastName)
                 .orElseThrow(() -> new AuthorNotFoundException("Author not found with name: " + firstName + " " + lastName));
-        return bookRepository.findBooksByAuthorId(author.getId());
+        return bookRepository.findBooksByAuthorId(author.getAuthor_id());
     }
 }
