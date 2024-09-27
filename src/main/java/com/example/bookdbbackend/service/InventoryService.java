@@ -27,7 +27,7 @@ public class InventoryService implements IInventoryService {
                 case "stock_level_new":
                     inventory.setStock_level_new((Integer) entry.getValue());
                     break;
-                case "stock_level_old":
+                case "stock_level_used":
                     inventory.setStock_level_used((Integer) entry.getValue());
                     break;
             }
