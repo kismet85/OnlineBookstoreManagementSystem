@@ -7,10 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -47,12 +45,27 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public Book updateBook(Book book, Long id)
+    public Book updateBook(Map<String, Object> updates, Long id)
     {
+        Book book = getBookById(id);
         if (!bookAlreadyExists(id)){
             throw new BookNotFoundException("Book with id " + id + " not found");
         }
-        book.setBook_id(id);
+        for (Map.Entry<String, Object> entry : updates.entrySet())
+            switch (entry.getKey()) {
+                case "title":
+                    book.setTitle((String) entry.getValue());
+                    break;
+                case "isbn":
+                    book.setIsbn((String) entry.getValue());
+                    break;
+                case "genre":
+                    book.setGenre((String) entry.getValue());
+                    break;
+                case "price":
+                    book.setPrice((BigDecimal) entry.getValue());
+                    break;
+            }
         return bookRepository.save(book);
     }
 
