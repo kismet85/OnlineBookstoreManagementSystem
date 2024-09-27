@@ -54,6 +54,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET, "/authors/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/authors/{id}/books").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/inventory/{id}").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/inventory/{id}").permitAll()
                                 .anyRequest().hasRole("ADMIN")
                 );
         return http.build();
