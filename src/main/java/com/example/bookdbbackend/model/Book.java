@@ -27,16 +27,10 @@ public class Book {
     private String isbn;
     private String genre;
     private String type;
-
     private int publication_year;
-
-    @Column(precision = 10, scale = 2)
     private BigDecimal price;
-
     private String book_condition;
-
     private boolean reserved;
-
     private String image_url;
 
     @ManyToOne

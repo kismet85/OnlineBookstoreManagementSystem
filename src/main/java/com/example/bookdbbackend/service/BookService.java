@@ -1,4 +1,5 @@
 package com.example.bookdbbackend.service;
+
 import com.example.bookdbbackend.exception.BookAlreadyExistsException;
 import com.example.bookdbbackend.exception.BookNotFoundException;
 import com.example.bookdbbackend.model.Book;
@@ -16,10 +17,10 @@ public class BookService implements IBookService {
 
     @Autowired
     private final BookRepository bookRepository;
+
     @Override
     public Book addBook(Book book) {
-        if (bookAlreadyExists(book.getBook_id()))
-        {
+        if (bookAlreadyExists(book.getBook_id())) {
             throw new BookAlreadyExistsException("Book with id " + book.getBook_id() + " already exists");
         }
         return bookRepository.save(book);
@@ -35,9 +36,9 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public  Book getBookById(Long id) {
+    public Book getBookById(Long id) {
         Optional<Book> book = bookRepository.findById(id);
-        if (!book.isPresent()){
+        if (book.isEmpty()) {
             throw new BookNotFoundException("Book with id " + id + " not found");
         }
 
@@ -45,33 +46,54 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public Book updateBook(Map<String, Object> updates, Long id)
-    {
-        Book book = getBookById(id);
-        if (!bookAlreadyExists(id)){
+    public Book updateBook(Map<String, Object> updates, Long id) {
+        try{
+            Book book = getBookById(id);
+            if (!bookAlreadyExists(id)) {
+                throw new BookNotFoundException("Book with id " + id + " not found");
+            }
+            for (Map.Entry<String, Object> entry : updates.entrySet())
+                switch (entry.getKey()) {
+                    case "title":
+                        book.setTitle((String) entry.getValue());
+                        break;
+                    case "isbn":
+                        book.setIsbn((String) entry.getValue());
+                        break;
+                    case "genre":
+                        book.setGenre((String) entry.getValue());
+                        break;
+                    case "type":
+                        book.setType((String) entry.getValue());
+                        break;
+                    case "price":
+                        // Explicitly parse the value as BigDecimal
+                        // This is kind of stupid because now the value is not really a big decimal
+                        if (entry.getValue() instanceof Number) {
+                            book.setPrice(BigDecimal.valueOf(((Number) entry.getValue()).doubleValue()));
+                        }
+                        break;
+                    case "publication_year":
+                        book.setPublication_year((Integer) entry.getValue());
+                        break;
+                    case "book_condition":
+                        book.setBook_condition((String) entry.getValue());
+                    case "image_url":
+                        book.setImage_url((String) entry.getValue());
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Invalid field: " + entry.getKey());
+                }
+            return bookRepository.save(book);
+        } catch (Exception e) {
             throw new BookNotFoundException("Book with id " + id + " not found");
         }
-        for (Map.Entry<String, Object> entry : updates.entrySet())
-            switch (entry.getKey()) {
-                case "title":
-                    book.setTitle((String) entry.getValue());
-                    break;
-                case "isbn":
-                    book.setIsbn((String) entry.getValue());
-                    break;
-                case "genre":
-                    book.setGenre((String) entry.getValue());
-                    break;
-                case "price":
-                    book.setPrice((BigDecimal) entry.getValue());
-                    break;
-            }
-        return bookRepository.save(book);
     }
+
 
     @Override
     public void deleteBook(Long id) {
-        if (!bookAlreadyExists(id)){
+        if (!bookAlreadyExists(id)) {
             throw new BookNotFoundException("Book with id " + id + " not found");
         }
         bookRepository.deleteById(id);
@@ -80,21 +102,21 @@ public class BookService implements IBookService {
     @Override
     public List<Book> getBooksByTitle(String title) {
         List<Book> books = bookRepository.findBooksByTitleContainingIgnoreCase(title);
-        if (books.isEmpty()){
+        if (books.isEmpty()) {
             throw new BookNotFoundException("Book with title " + title + " not found");
         }
         return books;
     }
 
     @Override
-    public List <Book> getBooksByAuthorId(Long author_id) {
+    public List<Book> getBooksByAuthorId(Long author_id) {
         return bookRepository.findBooksByAuthorId(author_id);
     }
 
     @Override
     public Book getBookByIsbn(String isbn) {
         Optional<Book> book = bookRepository.findBookByIsbn(isbn);
-        if (!book.isPresent()){
+        if (!book.isPresent()) {
             throw new BookNotFoundException("Book with isbn " + isbn + " not found");
         }
         return book.get();
@@ -103,7 +125,7 @@ public class BookService implements IBookService {
     @Override
     public List<Book> getBooksByGenre(String genre) {
         List<Book> books = bookRepository.findBooksByGenreContainingIgnoreCase(genre);
-        if (books.isEmpty()){
+        if (books.isEmpty()) {
             throw new BookNotFoundException("Book with genre " + genre + " not found");
         }
         return books;
@@ -112,7 +134,7 @@ public class BookService implements IBookService {
     @Override
     public List<Book> getBooksByPublisherName(String publisher) {
         List<Book> books = bookRepository.findBooksByPublisherName(publisher);
-        if (books.isEmpty()){
+        if (books.isEmpty()) {
             throw new BookNotFoundException("Book with publisher " + publisher + " not found");
         }
         return books;
@@ -126,13 +148,11 @@ public class BookService implements IBookService {
         List<Book> booksByGenre = bookRepository.findBooksByGenreContainingIgnoreCase(searchTerm);
         List<Book> booksByIsbn = bookRepository.findBooksByIsbnContainingIgnoreCase(searchTerm);
 
-        if (searchTerm.length() < 3)
-        {
+        if (searchTerm.length() < 3) {
             throw new IllegalArgumentException("Search term must be at least 3 characters long");
         }
 
-        if (!booksByIsbn.isEmpty())
-        {
+        if (!booksByIsbn.isEmpty()) {
             return booksByIsbn;
         }
 
