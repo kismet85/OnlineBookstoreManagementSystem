@@ -5,6 +5,8 @@ import com.example.bookdbbackend.exception.BookNotFoundException;
 import com.example.bookdbbackend.model.Book;
 import com.example.bookdbbackend.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +16,12 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class BookService implements IBookService {
+    private static final Logger logger = LoggerFactory.getLogger(BookService.class);
+
 
     @Autowired
     private final BookRepository bookRepository;
+
 
     @Override
     public Book addBook(Book book) {
@@ -48,6 +53,7 @@ public class BookService implements IBookService {
     @Override
     public Book updateBook(Map<String, Object> updates, Long id) {
         try{
+            logger.info("Updates: " + updates.toString());
             Book book = getBookById(id);
             if (!bookAlreadyExists(id)) {
                 throw new BookNotFoundException("Book with id " + id + " not found");
@@ -78,11 +84,10 @@ public class BookService implements IBookService {
                         break;
                     case "book_condition":
                         book.setBook_condition((String) entry.getValue());
+                        break;
                     case "image_url":
                         book.setImage_url((String) entry.getValue());
                         break;
-                    default:
-                        throw new IllegalArgumentException("Invalid field: " + entry.getKey());
                 }
             return bookRepository.save(book);
         } catch (Exception e) {

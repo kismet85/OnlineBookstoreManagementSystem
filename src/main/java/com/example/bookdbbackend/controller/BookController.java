@@ -3,6 +3,9 @@ package com.example.bookdbbackend.controller;
 import com.example.bookdbbackend.service.IBookService;
 import com.example.bookdbbackend.service.IUserService;
 import com.example.bookdbbackend.service.JwtService;
+import lombok.extern.flogger.Flogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,8 @@ public class BookController {
     private final IBookService iBookService;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+
     @GetMapping
     public ResponseEntity<List<Book>> getBooks() {
         try {
@@ -73,6 +78,8 @@ public class BookController {
         }
 
         boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        logger.info("user role: " + isAdmin);
+
 
         if (!isAdmin) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
