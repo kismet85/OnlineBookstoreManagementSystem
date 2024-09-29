@@ -72,4 +72,10 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<User>> searchUsers(@RequestParam String query) {
+        List<User> users = iUserService.searchUsers(query);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
 }

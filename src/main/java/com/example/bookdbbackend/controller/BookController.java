@@ -61,8 +61,23 @@ public class BookController {
     }
 
     @PostMapping
-    public Book addBook(@RequestBody Book book) {
-        return iBookService.addBook(book);
+    public ResponseEntity<Book> addBook(@RequestBody Book book, @RequestHeader("Authorization") String token) {
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        Book addedBook = iBookService.addBook(book);
+        return new ResponseEntity<>(addedBook, HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}")

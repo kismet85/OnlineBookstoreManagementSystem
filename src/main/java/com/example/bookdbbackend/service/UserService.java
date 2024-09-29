@@ -9,6 +9,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.lang.module.InvalidModuleDescriptorException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +25,8 @@ public class UserService implements IUserService {
 
     @Override
     public List<User> getUsers() {
-        return userRepository.findAll();
+        // return user excluding the password
+        return userRepository.findAll().stream().peek(user -> user.setPassword(null)).toList();
     }
 
     @Override
@@ -83,5 +86,19 @@ public class UserService implements IUserService {
     public User getUserByEmail(String email) {
         return userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+    }
+
+    @Override
+    public List<User> searchUsers(String searchTerm) {
+
+        List<User> usersByEmail = userRepository.getUserByEmailContainingIgnoreCase(searchTerm);
+
+        List<User> combinedResults = new ArrayList<>();
+
+        combinedResults.addAll(usersByEmail);
+
+        combinedResults = new ArrayList<>(new HashSet<>(combinedResults));
+
+        return combinedResults;
     }
 }
