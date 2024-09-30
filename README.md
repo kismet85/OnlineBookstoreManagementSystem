@@ -4,7 +4,7 @@
 
 ## **Project Overview**
 
-The Book Management System is a comprehensive web application designed to manage and facilitate the sale and loaning of books. Built with a React frontend and a Java backend, this system provides a seamless experience for both customers and administrators. Customers can browse through an extensive collection of books, purchase or loan them using various payment methods, including direct payment or through a subscription model. Administrators can efficiently manage the book inventory, track transactions, and manage customer subscriptions.
+The Book Management System is a comprehensive web application designed to manage and facilitate the sale of books. Built with a React frontend and a Java backend, this system provides a seamless experience for both customers and administrators. Customers can browse through an extensive collection of books, purchase them using a payment method. l. Administrators can efficiently manage the book inventory, track transactions, and manage users.
 
 ## **Creators**
 
@@ -20,8 +20,8 @@ This project was collaboratively developed by:
 - **Book Browsing**: Users can browse a wide range of books categorized by genre, author, and popularity.
 - **Search Functionality**: A robust search engine allows users to quickly find specific books.
 - **Book Details**: Each book has a detailed page including the author, description, price, and availability.
-- **Purchase and Loan Options**: Customers can either buy or loan books. Loaning can be done through a direct payment or via a subscription model.
-- **Subscription Management**: Users can subscribe to various plans which allow them to loan books on a regular basis.
+- **Purchase**: Customers can buy books.
+- **Subscription Management**: Users can signup,browse and buy books.
 
 ### **Admin Features**
 - **Book Inventory Management**: Admins can add, update, and delete books from the inventory.
@@ -60,8 +60,8 @@ This project was collaboratively developed by:
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-repo/book-management-system.git
-   cd book-management-system
+   git clone https://github.com/kismet85/OnlineBookstoreManagementSystem.git
+   cd file/repo
 
 2. **Setup Backend**:
 
@@ -79,15 +79,15 @@ This project was collaboratively developed by:
 **npm install**
 **Run the React development server:**
 
-**npm start**
+**npm run dev**
 
 4. **Access the Application**:
 
 ### ***Open your browser and go to http://localhost:5173 for the frontend.***
 ## ***The backend should be running at http://localhost:8080.***
 # Usage
-**Customer Interface: Browse books, add them to your cart, and proceed to purchase or loan them.
-Admin Interface: Manage the book inventory, track sales and loans, and manage user subscriptions.**
+**Customer Interface: Browse books, add them to your cart, and proceed to purchase them.
+Admin Interface: Manage the book inventory, track sales and manage users.**
 
 
 ## Contact
