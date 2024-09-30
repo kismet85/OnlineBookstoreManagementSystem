@@ -8,7 +8,6 @@ import java.util.Optional;
 public interface IBookService {
     Book addBook(Book book);
     List<Book> getAllBooks();
-    List<Book> getBooksByAuthorId(Long author_id);
     Book getBookById(Long id);
     Book updateBook(Map<String, Object> updates, Long id);
     void deleteBook(Long id);
@@ -18,5 +17,6 @@ public interface IBookService {
 
     List<Book> getBooksByPublisherName(String publisher);
 
+    List<Book> getBooksByAuthor(String author);
     List<Book> searchBooks(String searchTerm);
 }

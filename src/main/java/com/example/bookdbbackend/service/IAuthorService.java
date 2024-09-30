@@ -8,6 +8,5 @@ import java.util.List;
 public interface IAuthorService {
     List<Author> getAllAuthors();
     Author getAuthorById(Long id);
-    List<Book> getBooksByAuthorId(Long id);
-    List<Book> getBooksByAuthorName(String firstName, String lastName);
+
 }

@@ -30,16 +30,4 @@ public class AuthorService implements IAuthorService {
         }
         return authorRepository.findById(id).get();
     }
-
-    @Override
-    public List<Book> getBooksByAuthorId(Long id) {
-        return bookRepository.findBooksByAuthorId(id);
-    }
-
-    @Override
-    public List<Book> getBooksByAuthorName(String firstName, String lastName) {
-        Author author = authorRepository.findByFirstNameAndLastName(firstName, lastName)
-                .orElseThrow(() -> new AuthorNotFoundException("Author not found with name: " + firstName + " " + lastName));
-        return bookRepository.findBooksByAuthorId(author.getAuthor_id());
-    }
 }

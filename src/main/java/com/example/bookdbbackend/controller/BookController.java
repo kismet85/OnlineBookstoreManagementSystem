@@ -53,13 +53,6 @@ public class BookController {
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
-
-    @GetMapping("/author/{author_id}")
-    public ResponseEntity<List<Book>> getBooksByAuthorId(@PathVariable Long author_id) {
-        List<Book> books = iBookService.getBooksByAuthorId(author_id);
-        return new ResponseEntity<>(books, HttpStatus.OK);
-    }
-
     @PostMapping
     public ResponseEntity<Book> addBook(@RequestBody Book book, @RequestHeader("Authorization") String token) {
         String actualToken = token.replace("Bearer ", "");

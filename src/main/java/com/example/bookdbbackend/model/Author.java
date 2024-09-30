@@ -1,6 +1,8 @@
 package com.example.bookdbbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,8 +29,8 @@ public class Author {
     @Column(name = "last_name")
     private String lastName;
 
-    @ManyToMany(mappedBy = "authors")
-    @JsonBackReference
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<Book> books = new HashSet<>();
 
 }

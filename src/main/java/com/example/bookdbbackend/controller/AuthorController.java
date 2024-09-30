@@ -33,23 +33,5 @@ public class AuthorController {
         }
     }
 
-    @GetMapping("/{id}/books")
-    public ResponseEntity<List<Book>> getBooksByAuthorId(@PathVariable Long id) {
-        try {
-            List<Book> books = iAuthorService.getBooksByAuthorId(id);
-            return new ResponseEntity<>(books, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 
-    @GetMapping("/name/{firstName}/{lastName}/books")
-    public ResponseEntity<List<Book>> getBooksByAuthorFullName(@PathVariable String firstName, @PathVariable String lastName) {
-        try {
-            List<Book> books = iAuthorService.getBooksByAuthorName(firstName, lastName);
-            return new ResponseEntity<>(books, HttpStatus.OK);
-        } catch (AuthorNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 }

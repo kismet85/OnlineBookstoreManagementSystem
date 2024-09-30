@@ -113,10 +113,6 @@ public class BookService implements IBookService {
         return books;
     }
 
-    @Override
-    public List<Book> getBooksByAuthorId(Long author_id) {
-        return bookRepository.findBooksByAuthorId(author_id);
-    }
 
     @Override
     public Book getBookByIsbn(String isbn) {
@@ -125,6 +121,15 @@ public class BookService implements IBookService {
             throw new BookNotFoundException("Book with isbn " + isbn + " not found");
         }
         return book.get();
+    }
+
+    @Override
+    public List<Book> getBooksByAuthor(String author) {
+        List<Book> books = bookRepository.findBooksByAuthorsFirstNameContainingIgnoreCase(author);
+        if (books.isEmpty()) {
+            throw new BookNotFoundException("Book with author " + author + " not found");
+        }
+        return books;
     }
 
     @Override
