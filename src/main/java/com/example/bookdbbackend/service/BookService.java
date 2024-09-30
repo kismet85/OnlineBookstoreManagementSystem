@@ -25,9 +25,6 @@ public class BookService implements IBookService {
 
     @Override
     public Book addBook(Book book) {
-        if (bookAlreadyExists(book.getBook_id())) {
-            throw new BookAlreadyExistsException("Book with id " + book.getBook_id() + " already exists");
-        }
         return bookRepository.save(book);
     }
 
