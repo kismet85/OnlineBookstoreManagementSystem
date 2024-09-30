@@ -2,10 +2,8 @@ package com.example.bookdbbackend.controller;
 
 import com.example.bookdbbackend.dtos.OrderDto;
 import com.example.bookdbbackend.dtos.OrderItemDto;
-import com.example.bookdbbackend.model.Book;
-import com.example.bookdbbackend.model.Order;
-import com.example.bookdbbackend.model.OrderItem;
-import com.example.bookdbbackend.model.User;
+import com.example.bookdbbackend.model.*;
+import com.example.bookdbbackend.repository.InventoryRepository;
 import com.example.bookdbbackend.repository.OrderItemRepository;
 import com.example.bookdbbackend.repository.OrderRepository;
 import com.example.bookdbbackend.service.*;
@@ -32,8 +30,9 @@ public class OrderController {
     private final BookService bookService;
     private final OrderService orderService;
 
+    private final InventoryService inventoryService;
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
-    public OrderController(OrderRepository orderRepository, OrderItemRepository orderItemRepository, IUserService iUserService, JwtService jwtService, UserDetailsService userDetailsService, UserService userService, BookService bookService, OrderService orderService) {
+    public OrderController(OrderRepository orderRepository, OrderItemRepository orderItemRepository, IUserService iUserService, JwtService jwtService, UserDetailsService userDetailsService, UserService userService, BookService bookService, OrderService orderService, InventoryService inventoryService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.iUserService = iUserService;
@@ -42,6 +41,7 @@ public class OrderController {
         this.userService = userService;
         this.bookService = bookService;
         this.orderService = orderService;
+        this.inventoryService = inventoryService;
     }
 
     @GetMapping
@@ -120,6 +120,7 @@ public class OrderController {
             Book book = bookService.getBookById(orderItemDto.getBook_id());
 
             OrderItem orderItem = new OrderItem();
+
             orderItem.setOrder(order);
             orderItem.setBook(book);
             orderItem.setQuantity(orderItemDto.getQuantity());
