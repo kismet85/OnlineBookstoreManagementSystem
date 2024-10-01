@@ -154,6 +154,8 @@ public class BookService implements IBookService {
         List<Book> booksByPublisher = bookRepository.findBooksByPublisherName(searchTerm);
         List<Book> booksByGenre = bookRepository.findBooksByGenreContainingIgnoreCase(searchTerm);
         List<Book> booksByIsbn = bookRepository.findBooksByIsbnContainingIgnoreCase(searchTerm);
+        List<Book> booksByAuthor = bookRepository.findBooksByAuthorsFirstNameContainingIgnoreCase(searchTerm);
+        List<Book> booksByAuthorLastName = bookRepository.findBooksByAuthorsLastNameContainingIgnoreCase(searchTerm);
 
         if (searchTerm.length() < 3) {
             throw new IllegalArgumentException("Search term must be at least 3 characters long");
@@ -168,6 +170,8 @@ public class BookService implements IBookService {
         combinedResults.addAll(booksByTitle);
         combinedResults.addAll(booksByPublisher);
         combinedResults.addAll(booksByGenre);
+        combinedResults.addAll(booksByAuthor);
+        combinedResults.addAll(booksByAuthorLastName);
 
         combinedResults = new ArrayList<>(new HashSet<>(combinedResults));
 
