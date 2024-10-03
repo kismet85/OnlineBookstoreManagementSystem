@@ -2,6 +2,7 @@ package com.example.bookdbbackend.controller;
 
 import com.example.bookdbbackend.exception.UserNotFoundException;
 import com.example.bookdbbackend.service.JwtService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
@@ -78,4 +79,33 @@ public class UserController {
         List<User> users = iUserService.searchUsers(query);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        // Check if the token is valid
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+        }
+
+        // Check if the user is an admin
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin) {
+            return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
+        }
+
+        try {
+            iUserService.deleteUser(id);
+            return new ResponseEntity<>("Successfully deleted user with id: " + id, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("An error occurred while deleting the user", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

@@ -7,6 +7,7 @@ import com.example.bookdbbackend.repository.InventoryRepository;
 import com.example.bookdbbackend.repository.OrderItemRepository;
 import com.example.bookdbbackend.repository.OrderRepository;
 import com.example.bookdbbackend.service.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,9 +31,11 @@ public class OrderController {
     private final BookService bookService;
     private final OrderService orderService;
 
+    private final IOrderService iOrderService;
+
     private final InventoryService inventoryService;
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
-    public OrderController(OrderRepository orderRepository, OrderItemRepository orderItemRepository, IUserService iUserService, JwtService jwtService, UserDetailsService userDetailsService, UserService userService, BookService bookService, OrderService orderService, InventoryService inventoryService) {
+    public OrderController(OrderRepository orderRepository, OrderItemRepository orderItemRepository, IUserService iUserService, JwtService jwtService, UserDetailsService userDetailsService, UserService userService, BookService bookService, OrderService orderService, IOrderService iOrderService, InventoryService inventoryService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.iUserService = iUserService;
@@ -41,6 +44,7 @@ public class OrderController {
         this.userService = userService;
         this.bookService = bookService;
         this.orderService = orderService;
+        this.iOrderService = iOrderService;
         this.inventoryService = inventoryService;
     }
 
@@ -134,4 +138,33 @@ public class OrderController {
 
         return ResponseEntity.ok(order);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteOrder(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        // Check if the token is valid
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+        }
+
+        // Check if the user is an admin
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin) {
+            return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
+        }
+
+        try {
+            iOrderService.deleteOrder(id);
+            return new ResponseEntity<>("Successfully deleted order with id: " + id, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>("Order not found", HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("An error occurred while deleting the order", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
