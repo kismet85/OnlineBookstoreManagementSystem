@@ -3,6 +3,7 @@ package com.example.bookdbbackend.controller;
 import com.example.bookdbbackend.service.IBookService;
 import com.example.bookdbbackend.service.IUserService;
 import com.example.bookdbbackend.service.JwtService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.flogger.Flogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +72,34 @@ public class BookController {
 
         Book addedBook = iBookService.addBook(book);
         return new ResponseEntity<>(addedBook, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBook(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        // Check if the token is valid
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+        }
+
+        // Check if the user is an admin
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin) {
+            return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
+        }
+
+        try {
+            iBookService.deleteBook(id);
+            return new ResponseEntity<>("Successfully deleted book with id: " + id, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>("Book not found", HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("An error occurred while deleting the book", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/{id}")
