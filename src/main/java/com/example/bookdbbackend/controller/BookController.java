@@ -1,10 +1,9 @@
 package com.example.bookdbbackend.controller;
 
+import com.example.bookdbbackend.dtos.BookRequest;
 import com.example.bookdbbackend.service.IBookService;
-import com.example.bookdbbackend.service.IUserService;
 import com.example.bookdbbackend.service.JwtService;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.extern.flogger.Flogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.example.bookdbbackend.model.Book;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -55,24 +53,36 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<Book> addBook(@RequestBody Book book, @RequestHeader("Authorization") String token) {
-        String actualToken = token.replace("Bearer ", "");
-        String username = jwtService.extractUsername(actualToken);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+    public ResponseEntity<?> addBook(@RequestBody BookRequest bookRequest, @RequestHeader("Authorization") String token) {
+        try {
+            // Extract and validate the token
+            String actualToken = token.replace("Bearer ", "");
+            String username = jwtService.extractUsername(actualToken);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        if (!jwtService.isTokenValid(actualToken, userDetails)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            if (!jwtService.isTokenValid(actualToken, userDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+            }
+
+            // Check if the user has admin privileges
+            boolean isAdmin = userDetails.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+            if (!isAdmin) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+            }
+
+            // Create the book and return the response
+            Book book = iBookService.createBook(bookRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(book);
+
+        } catch (RuntimeException e) {
+            // Handle specific exceptions or log the error if needed
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while adding the book: " + e.getMessage());
         }
-
-        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
-        if (!isAdmin) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
-        Book addedBook = iBookService.addBook(book);
-        return new ResponseEntity<>(addedBook, HttpStatus.CREATED);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable Long id, @RequestHeader("Authorization") String token) {

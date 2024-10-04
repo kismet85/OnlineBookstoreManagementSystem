@@ -1,12 +1,12 @@
 package com.example.bookdbbackend.service;
+import com.example.bookdbbackend.dtos.BookRequest;
 import com.example.bookdbbackend.model.Book;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 
 public interface IBookService {
-    Book addBook(Book book);
+    Book createBook(BookRequest bookRequest);
     List<Book> getAllBooks();
     Book getBookById(Long id);
     Book updateBook(Map<String, Object> updates, Long id);

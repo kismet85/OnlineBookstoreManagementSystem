@@ -1,9 +1,18 @@
 package com.example.bookdbbackend.service;
 
+import com.example.bookdbbackend.dtos.AuthorRequest;
+import com.example.bookdbbackend.dtos.BookRequest;
+import com.example.bookdbbackend.dtos.InventoryRequest;
 import com.example.bookdbbackend.exception.BookAlreadyExistsException;
 import com.example.bookdbbackend.exception.BookNotFoundException;
+import com.example.bookdbbackend.model.Author;
 import com.example.bookdbbackend.model.Book;
+import com.example.bookdbbackend.model.Inventory;
+import com.example.bookdbbackend.model.Publisher;
+import com.example.bookdbbackend.repository.AuthorRepository;
 import com.example.bookdbbackend.repository.BookRepository;
+import com.example.bookdbbackend.repository.InventoryRepository;
+import com.example.bookdbbackend.repository.PublisherRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +30,68 @@ public class BookService implements IBookService {
 
     @Autowired
     private final BookRepository bookRepository;
+    @Autowired
+    private final AuthorRepository authorRepository;
+    @Autowired
+    private final PublisherRepository publisherRepository;
+    @Autowired
+    private final InventoryRepository inventoryRepository;
+
 
 
     @Override
-    public Book addBook(Book book) {
+    public Book createBook(BookRequest bookRequest) {
+        Inventory inventory = new Inventory();
+        inventory.setStock_level_used(bookRequest.getInventory().getStockLevelUsed());
+        inventory.setStock_level_new(bookRequest.getInventory().getStockLevelNew());
+        inventory.setReserved_stock(bookRequest.getInventory().getReservedStock());
+        inventoryRepository.save(inventory);
+
+        Book book = new Book();
+        book.setTitle(bookRequest.getTitle());
+        book.setIsbn(bookRequest.getIsbn());
+        book.setGenre(bookRequest.getGenre());
+        book.setType(bookRequest.getType());
+        book.setPublication_year(bookRequest.getPublicationYear());
+        book.setPrice(bookRequest.getPrice());
+        book.setBook_condition(bookRequest.getBookCondition());
+        book.setReserved(bookRequest.isReserved());
+        book.setImage_url(bookRequest.getImageUrl());
+        book.setInventory(inventory);
+
+        // Set the publisher
+        if (bookRequest.getPublisherId() != null) {
+            // Existing publisher
+            Publisher publisher = publisherRepository.findById(bookRequest.getPublisherId())
+                    .orElseThrow(() -> new RuntimeException("Publisher not found"));
+            book.setPublisher(publisher);
+        } else if (bookRequest.getPublisher() != null) {
+            // New publisher
+            Publisher publisher = new Publisher();
+            publisher.setName(bookRequest.getPublisher().getName());
+            publisher.setCountry(bookRequest.getPublisher().getCountry());
+            publisher = publisherRepository.save(publisher);
+            book.setPublisher(publisher);
+        }
+
+
+        Set<Author> authors = new HashSet<>();
+        for (AuthorRequest authorRequest : bookRequest.getAuthors()) {
+            Author author = new Author();
+            author.setFirstName(authorRequest.getFirstName());
+            author.setLastName(authorRequest.getLastName());
+
+            // Check if the author already exists (to avoid duplicates)
+            Optional<Author> existingAuthor = authorRepository
+                    .findByFirstNameAndLastName(authorRequest.getFirstName(), authorRequest.getLastName());
+            if (existingAuthor.isPresent()) {
+                authors.add(existingAuthor.get());
+            } else {
+                authors.add(authorRepository.save(author));
+            }
+        }
+        book.setAuthors(authors);
+
         return bookRepository.save(book);
     }
 

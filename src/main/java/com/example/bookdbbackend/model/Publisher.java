@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 
 public class Publisher {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long publisher_id;
     private String country;
     private String name;
