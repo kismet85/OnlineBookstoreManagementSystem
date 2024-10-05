@@ -1,48 +1,57 @@
 package com.example.bookdbbackend.service;
 
+import com.example.bookdbbackend.exception.UserNotFoundException;
 import com.example.bookdbbackend.model.User;
 import com.example.bookdbbackend.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-class UserServiceTest {
+@ActiveProfiles("test") // Use the test profile to load application-test.properties
+public class UserServiceTest {
 
     @Autowired
     private UserService userService;
 
-    @MockBean
+    @Autowired
     private UserRepository userRepository;
 
-    @MockBean
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private User user;
+
+    @BeforeEach
+    public void setUp() {
+        userRepository.deleteAll();
+
+        user = new User();
+        user.setUser_id(1L);
+        user.setFirst_name("John");
+        user.setLast_name("Doe");
+
+        userRepository.save(user);
+    }
 
     @Test
-    public void testGetUserById() {
-        // Prepare test data
-        Long userId = 1L;
-        User mockUser = new User(); // Create a new User object
-        mockUser.setUser_id(userId); // Set the user ID to match
+    public void testGetUserById_UserExists() {
+        User foundUser = userService.getUserById(1L);
+        assertEquals("John", foundUser.getFirst_name());
+        assertEquals("Doe", foundUser.getLast_name());
+    }
 
-        // Mock the behavior of userRepository
-        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser)); // Assuming findById returns Optional<User>
+    @Test
+    public void testGetUserById_UserNotFound() {
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+            userService.getUserById(3L);
+        });
 
-        // Call the method to test
-        User user = userService.getUserById(userId);
-
-        // Verify the user is not null
-        assertNotNull(user);
-
-        // Verify the user ID matches
-        assertEquals(userId, user.getUser_id());
+        assertEquals("User not found with id: 3", exception.getMessage());
     }
 }

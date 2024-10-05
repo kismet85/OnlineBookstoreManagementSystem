@@ -69,10 +69,8 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserById(Long id) {
-        if (!userRepository.findById(id).isPresent()) {
-            throw new UserNotFoundException("User not found with id: " + id);
-        }
-        return userRepository.findById(id).get();
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
     @Override
