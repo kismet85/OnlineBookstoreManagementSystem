@@ -3,6 +3,7 @@ package com.example.bookdbbackend.service;
 import com.example.bookdbbackend.dtos.AuthorRequest;
 import com.example.bookdbbackend.dtos.BookRequest;
 import com.example.bookdbbackend.dtos.InventoryRequest;
+import com.example.bookdbbackend.dtos.PublisherRequest;
 import com.example.bookdbbackend.exception.*;
 import com.example.bookdbbackend.model.Author;
 import com.example.bookdbbackend.model.Book;
@@ -247,6 +248,34 @@ public class BookService implements IBookService {
         }
     }
 
+    @Override
+    public BookRequest createDummyBook(){
+        BookRequest bookRequest = new BookRequest();
+        bookRequest.setTitle("");
+        bookRequest.setIsbn("");
+        bookRequest.setGenre("");
+        bookRequest.setType("");
+        bookRequest.setPublicationYear(0);
+        bookRequest.setPrice(BigDecimal.valueOf(0));
+        bookRequest.setBookCondition("");
+        bookRequest.setReserved(false);
+        bookRequest.setImageUrl("");
+
+        PublisherRequest publisherRequest = new PublisherRequest();
+        publisherRequest.setCountry("");
+        publisherRequest.setName("");
+        bookRequest.setPublisher(publisherRequest);
+
+        bookRequest.setAuthors(new ArrayList<>());
+
+        InventoryRequest inventoryRequest = new InventoryRequest();
+        inventoryRequest.setStockLevelUsed(0);
+        inventoryRequest.setStockLevelNew(0);
+        inventoryRequest.setReservedStock(0);
+        bookRequest.setInventory(inventoryRequest);
+
+        return bookRequest;
+    }
 
     @Override
     public void deleteBook(Long id) {

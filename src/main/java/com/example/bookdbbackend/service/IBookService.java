@@ -19,4 +19,6 @@ public interface IBookService {
 
     List<Book> getBooksByAuthor(String author);
     List<Book> searchBooks(String searchTerm);
+
+    BookRequest createDummyBook();
 }

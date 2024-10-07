@@ -114,6 +114,28 @@ public class BookController {
         }
     }
 
+    @GetMapping("/dummy")
+    public ResponseEntity<?> createDummyBook(@RequestHeader("Authorization") String token) {
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        // Check if the token is valid
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+        }
+
+        // Check if the user is an admin
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin) {
+            return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
+        }
+
+        BookRequest bookRequest = iBookService.createDummyBook();
+        return new ResponseEntity<>(bookRequest, HttpStatus.OK);
+    }
+
     @PostMapping("/{id}")
     public ResponseEntity<?> updateBook(@RequestBody Map<String, Object> updates, @PathVariable Long id, @RequestHeader("Authorization") String token) {
 
