@@ -6,6 +6,10 @@
 
 The Book Management System is a comprehensive web application designed to manage and facilitate the sale of books. Built with a React frontend and a Java backend, this system provides a seamless experience for both customers and administrators. Customers can browse through an extensive collection of books, purchase them using a payment method. l. Administrators can efficiently manage the book inventory, track transactions, and manage users.
 
+
+![image](https://github.com/user-attachments/assets/12cd736c-0284-4dbd-a194-1d89cdd4fa6d)
+
+
 ## **Creators**
 
 This project was collaboratively developed by:
