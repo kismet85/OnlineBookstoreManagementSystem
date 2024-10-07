@@ -1,6 +1,8 @@
 package com.example.bookdbbackend.controller;
 
 import com.example.bookdbbackend.dtos.BookRequest;
+import com.example.bookdbbackend.exception.BookNotFoundException;
+import com.example.bookdbbackend.exception.InvalidDataException;
 import com.example.bookdbbackend.service.IBookService;
 import com.example.bookdbbackend.service.JwtService;
 import jakarta.persistence.EntityNotFoundException;
@@ -113,32 +115,50 @@ public class BookController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@RequestBody Map<String, Object> updates, @PathVariable Long id, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> updateBook(@RequestBody Map<String, Object> updates, @PathVariable Long id, @RequestHeader("Authorization") String token) {
 
         String actualToken = token.replace("Bearer ", "");
         String username = jwtService.extractUsername(actualToken);
 
+        // Load user details using the extracted username
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
+        // Check if token is valid
         if (!jwtService.isTokenValid(actualToken, userDetails)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
 
+        // Check if the user has admin privileges
         boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        logger.info("user role: " + isAdmin);
+        logger.info("User role is admin: " + isAdmin);
 
-
+        // If the user is not an admin, return a 403 Forbidden status
         if (!isAdmin) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: Admin privileges required");
         }
 
         try {
+            // Attempt to update the book
             Book updatedBook = iBookService.updateBook(updates, id);
+
+            // Return the updated book and a 200 OK status
             return new ResponseEntity<>(updatedBook, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        } catch (BookNotFoundException e) {
+            // Return 404 Not Found if the book doesn't exist
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with ID " + id + " not found");
+
+        } catch (InvalidDataException e) {
+            // Return 400 Bad Request if the request data is invalid
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid data: " + e.getMessage());
+
+        } catch (Exception e) {
+            // Log the exception and return 500 Internal Server Error for other errors
+            logger.error("Error updating book with ID " + id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
         }
     }
+
 
     @GetMapping("/title/{title}")
     public ResponseEntity<List<Book>> getBooksByTitle(@PathVariable String title) {

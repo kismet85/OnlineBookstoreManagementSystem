@@ -1,5 +1,7 @@
 package com.example.bookdbbackend.service;
 
+import com.example.bookdbbackend.dtos.OrderItemResponseDto;
+import com.example.bookdbbackend.dtos.OrderResponseDto;
 import com.example.bookdbbackend.exception.OrderAlreadyExistsException;
 import com.example.bookdbbackend.exception.OrderAlreadyExistsException;
 import com.example.bookdbbackend.exception.OrderNotFoundException;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,13 +39,30 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Order getOrderById(Long id) {
+    public OrderResponseDto getOrderById(Long id) {
         Optional<Order> order = orderRepository.findById(id);
-        if (!order.isPresent()) {
+        if (order.isEmpty()) {
             throw new OrderNotFoundException("Order with id " + id + " not found");
         }
-        return order.get();
+
+        Order foundOrder = order.get();
+        OrderResponseDto responseDto = new OrderResponseDto();
+        responseDto.setTotal(foundOrder.getTotal());
+        responseDto.setOrderDate(foundOrder.getOrderDate());
+        responseDto.setUserEmail(foundOrder.getUser().getEmail());
+
+        List<OrderItemResponseDto> orderItemDtos = foundOrder.getOrderItems().stream()
+                .map(orderItem -> {
+                    OrderItemResponseDto itemDto = new OrderItemResponseDto();
+                    itemDto.setBookTitle(orderItem.getBook().getTitle());
+                    return itemDto;
+                })
+                .collect(Collectors.toList());
+
+        responseDto.setOrderItems(orderItemDtos);
+        return responseDto;
     }
+
 
     @Override
     public Order updateOrder(Order order, Long id) {

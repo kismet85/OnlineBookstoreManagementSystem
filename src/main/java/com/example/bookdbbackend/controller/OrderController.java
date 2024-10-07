@@ -2,6 +2,7 @@ package com.example.bookdbbackend.controller;
 
 import com.example.bookdbbackend.dtos.OrderDto;
 import com.example.bookdbbackend.dtos.OrderItemDto;
+import com.example.bookdbbackend.dtos.OrderResponseDto;
 import com.example.bookdbbackend.model.*;
 import com.example.bookdbbackend.repository.InventoryRepository;
 import com.example.bookdbbackend.repository.OrderItemRepository;
@@ -67,6 +68,32 @@ public class OrderController {
         }
 
         return new ResponseEntity<>(orderService.getAllOrders(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        OrderResponseDto order = iOrderService.getOrderById(id);
+
+        if (order == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
     @GetMapping("/me")

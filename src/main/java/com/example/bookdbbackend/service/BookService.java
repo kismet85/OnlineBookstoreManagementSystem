@@ -3,8 +3,7 @@ package com.example.bookdbbackend.service;
 import com.example.bookdbbackend.dtos.AuthorRequest;
 import com.example.bookdbbackend.dtos.BookRequest;
 import com.example.bookdbbackend.dtos.InventoryRequest;
-import com.example.bookdbbackend.exception.BookAlreadyExistsException;
-import com.example.bookdbbackend.exception.BookNotFoundException;
+import com.example.bookdbbackend.exception.*;
 import com.example.bookdbbackend.model.Author;
 import com.example.bookdbbackend.model.Book;
 import com.example.bookdbbackend.model.Inventory;
@@ -36,7 +35,6 @@ public class BookService implements IBookService {
     private final PublisherRepository publisherRepository;
     @Autowired
     private final InventoryRepository inventoryRepository;
-
 
 
     @Override
@@ -116,7 +114,7 @@ public class BookService implements IBookService {
 
     @Override
     public Book updateBook(Map<String, Object> updates, Long id) {
-        try{
+        try {
             logger.info("Updates: " + updates.toString());
             Book book = getBookById(id);
             if (!bookAlreadyExists(id)) {
@@ -152,10 +150,100 @@ public class BookService implements IBookService {
                     case "image_url":
                         book.setImage_url((String) entry.getValue());
                         break;
+                    case "reserved":
+                        book.setReserved((Boolean) entry.getValue());
+                        break;
+                    case "inventory":
+                        Map<String, Integer> inventoryUpdates = (Map<String, Integer>) entry.getValue();
+                        logger.info("Inventory updates: " + inventoryUpdates.toString());
+                        Inventory inventory = book.getInventory();
+                        if (inventoryUpdates.containsKey("stockLevelUsed")) {
+                            inventory.setStock_level_used(inventoryUpdates.get("stockLevelUsed"));
+                        }
+                        if (inventoryUpdates.containsKey("stockLevelNew")) {
+                            inventory.setStock_level_new(inventoryUpdates.get("stockLevelNew"));
+                        }
+                        if (inventoryUpdates.containsKey("reservedStock")) {
+                            inventory.setReserved_stock(inventoryUpdates.get("reservedStock"));
+                        }
+                        inventoryRepository.save(inventory);
+                        break;
+                    case "publisher":
+                        Map<String, String> publisherUpdates = (Map<String, String>) entry.getValue();
+                        Publisher publisher = book.getPublisher();
+                        if (publisherUpdates.containsKey("name")) {
+                            publisher.setName(publisherUpdates.get("name"));
+                        }
+                        if (publisherUpdates.containsKey("country")) {
+                            publisher.setCountry(publisherUpdates.get("country"));
+                        }
+                        publisherRepository.save(publisher);
+                        break;
+                    case "authors":
+                        logger.info("Updating authors");
+                        logger.info("Full updates map: " + updates);
+
+                        if (entry.getValue() instanceof List) {
+                            List<?> authorUpdatesList = (List<?>) entry.getValue();
+                            if (!authorUpdatesList.isEmpty() && authorUpdatesList.get(0) instanceof Map) {
+                                List<Map<String, Object>> authorUpdates = (List<Map<String, Object>>) authorUpdatesList; // Change to Map<String, Object> to allow for any type
+                                logger.info("Author updates: " + authorUpdates.toString());
+
+                                for (Map<String, Object> authorUpdate : authorUpdates) {
+                                    // Make sure to handle potential type issues with author_id
+                                    Object authorIdObj = authorUpdate.get("author_id");
+                                    if (authorIdObj instanceof Number) {
+                                        Long authorId = ((Number) authorIdObj).longValue(); // Use longValue() to convert Number to Long
+                                        logger.info("Author ID: " + authorId);
+
+                                        Author author = authorRepository.findById(authorId)
+                                                .orElseThrow(() -> new AuthorNotFoundException("Author with id " + authorId + " not found"));
+
+                                        // Check for firstName and lastName with safe casting
+                                        if (authorUpdate.containsKey("firstName")) {
+                                            Object firstNameObj = authorUpdate.get("firstName");
+                                            if (firstNameObj instanceof String) {
+                                                author.setFirstName((String) firstNameObj);
+                                            } else {
+                                                logger.error("Expected a String for firstName but found: " + firstNameObj.getClass());
+                                            }
+                                        }
+
+                                        if (authorUpdate.containsKey("lastName")) {
+                                            Object lastNameObj = authorUpdate.get("lastName");
+                                            if (lastNameObj instanceof String) {
+                                                author.setLastName((String) lastNameObj);
+                                            } else {
+                                                logger.error("Expected a String for lastName but found: " + lastNameObj.getClass());
+                                            }
+                                        }
+
+                                        authorRepository.save(author);
+                                        logger.info("Successfully updated author with ID: " + authorId);
+                                    } else {
+                                        logger.error("Expected author_id to be a Number but found: " + authorIdObj.getClass());
+                                        throw new RuntimeException("Invalid author ID format.");
+                                    }
+                                }
+                            } else {
+                                logger.error("Author updates list is empty or not a valid list of maps.");
+                                throw new RuntimeException("Invalid author updates format.");
+                            }
+                        } else {
+                            logger.error("Expected authors to be a List, but found: " + entry.getValue().getClass());
+                            throw new RuntimeException("Invalid author updates format.");
+                        }
+                        break;
+
+                    default:
+                        logger.warn("No matching case for key: " + entry.getKey());
+                        break;
                 }
+
             return bookRepository.save(book);
         } catch (Exception e) {
-            throw new BookNotFoundException("Book with id " + id + " not found");
+              logger.error("Error updating book with ID " + id, e);
+                throw new InvalidDataException(e.getMessage());
         }
     }
 
