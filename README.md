@@ -55,8 +55,9 @@ This project was collaboratively developed by:
 ### **Tools and Libraries**
 - **Maven**: For managing the project's dependencies and building the application.
 - **Hibernate**: An ORM tool for managing database operations in a more object-oriented manner.
-- **Thymeleaf**: Used in some parts of the admin interface for server-side rendering.
 - **Git**: Version control for collaborative development.
+- **Tailwind CSS**: Stlying for frontend.
+
 
 ## **Setup Instructions**
 
