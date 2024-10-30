@@ -30,6 +30,16 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public User addUser(User user) {
+        if (userRepository.findUserByEmail(user.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("User already exists with email: " + user.getEmail());
+        }
+        String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+        return userRepository.save(user);
+    }
+
+    @Override
     public User updateUser(Map<String, Object> updates, Long id) {
         User user = getUserById(id);
         for (Map.Entry<String, Object> entry : updates.entrySet()) {

@@ -86,7 +86,7 @@ public class BookController {
     }
 
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         String actualToken = token.replace("Bearer ", "");
         String username = jwtService.extractUsername(actualToken);

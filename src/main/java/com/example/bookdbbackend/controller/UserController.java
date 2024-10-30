@@ -46,6 +46,26 @@ public class UserController {
         return new ResponseEntity<>(iUserService.getUsers(), HttpStatus.OK);
     }
 
+    @PostMapping("/add")
+    public ResponseEntity<User> addUser(@RequestBody User user, @RequestHeader("Authorization") String token) {
+        String actualToken = token.replace("Bearer ", "");
+        String username = jwtService.extractUsername(actualToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (!jwtService.isTokenValid(actualToken, userDetails)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        User registeredUser = iUserService.addUser(user);
+        return ResponseEntity.ok(registeredUser);
+    }
+
     @PostMapping("/update/{id}")
     public ResponseEntity<User> updateUser(@RequestBody Map<String, Object> updates, @PathVariable Long id, @RequestHeader("Authorization") String token) {
         String actualToken = token.replace("Bearer ", "");
@@ -80,7 +100,7 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         String actualToken = token.replace("Bearer ", "");
         String username = jwtService.extractUsername(actualToken);

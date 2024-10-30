@@ -16,7 +16,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     List<Book> findBooksByIsbnContainingIgnoreCase(String isbn);
 
-
     Optional<Book> findBookByIsbn(String isbn);
 
     @Query("SELECT b FROM Book b WHERE b.publisher.publisher_id = :publisherId")
