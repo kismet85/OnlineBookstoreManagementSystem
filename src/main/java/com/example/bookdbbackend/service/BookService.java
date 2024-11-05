@@ -9,10 +9,7 @@ import com.example.bookdbbackend.model.Author;
 import com.example.bookdbbackend.model.Book;
 import com.example.bookdbbackend.model.Inventory;
 import com.example.bookdbbackend.model.Publisher;
-import com.example.bookdbbackend.repository.AuthorRepository;
-import com.example.bookdbbackend.repository.BookRepository;
-import com.example.bookdbbackend.repository.InventoryRepository;
-import com.example.bookdbbackend.repository.PublisherRepository;
+import com.example.bookdbbackend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +28,9 @@ public class BookService implements IBookService {
     @Autowired
     private final BookRepository bookRepository;
     @Autowired
-    private final BookRepository bookJpRepository;
+    private final BookJpRepository bookJpRepository;
     @Autowired
-    private final BookRepository bookFaRepository;
+    private final BookFaRepository bookFaRepository;
     @Autowired
     private final AuthorRepository authorRepository;
     @Autowired
