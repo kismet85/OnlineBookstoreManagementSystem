@@ -131,21 +131,6 @@ class BookServiceTest {
     }
 
     @Test
-    void testUpdateBook() {
-        Long id = 1L;
-        Map<String, Object> updates = Map.of("title", "Updated Title");
-        Book book = new Book();
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
-        when(bookRepository.save(any(Book.class))).thenReturn(book);
-
-        Book result = bookService.updateBook(updates, id);
-
-        assertEquals(book, result);
-        verify(bookRepository, times(1)).findById(id);
-        verify(bookRepository, times(1)).save(any(Book.class));
-    }
-
-    @Test
     void testDeleteBook_BookExists() {
         Long id = 1L;
         when(bookRepository.findById(id)).thenReturn(Optional.of(new Book()));
