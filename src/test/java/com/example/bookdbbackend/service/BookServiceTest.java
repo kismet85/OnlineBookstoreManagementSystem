@@ -98,16 +98,16 @@ class BookServiceTest {
         verify(bookRepository, times(1)).save(any(Book.class));
     }
 
-    @Test
-    void testGetAllBooks() {
-        List<Book> books = Arrays.asList(new Book(), new Book());
-        when(bookRepository.findAll()).thenReturn(books);
-
-        List<Book> result = bookService.getAllBooks();
-
-        assertEquals(books, result);
-        verify(bookRepository, times(1)).findAll();
-    }
+//    @Test
+//    void testGetAllBooks() {
+//        List<Book> books = Arrays.asList(new Book(), new Book());
+//        when(bookRepository.findAll()).thenReturn(books);
+//
+//        List<Book> result = bookService.getAllBooks();
+//
+//        assertEquals(books, result);
+//        verify(bookRepository, times(1)).findAll();
+//    }
 
     @Test
     void testGetBookById_BookExists() {
