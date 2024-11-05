@@ -29,9 +29,9 @@ public class BookController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     @GetMapping
-    public ResponseEntity<List<Book>> getBooks() {
+    public ResponseEntity<List<?>> getBooks(@RequestHeader("Accept-Language") String language) {
         try {
-            List<Book> books = iBookService.getAllBooks();
+            List<?> books = iBookService.getAllBooks(language);
             return new ResponseEntity<>(books, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

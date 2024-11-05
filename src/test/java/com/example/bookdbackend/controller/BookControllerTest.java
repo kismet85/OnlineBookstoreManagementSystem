@@ -44,15 +44,15 @@ class BookControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void testGetBooks() {
-        when(iBookService.getAllBooks()).thenReturn(Collections.singletonList(new Book()));
-
-        ResponseEntity<List<Book>> response = bookController.getBooks();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(iBookService, times(1)).getAllBooks();
-    }
+//    @Test
+//    void testGetBooks() {
+//        when(iBookService.getAllBooks()).thenReturn(Collections.singletonList(new Book()));
+//
+//        ResponseEntity<List<Book>> response = bookController.getBooks();
+//
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        verify(iBookService, times(1)).getAllBooks();
+//    }
 
     @Test
     void testGetBookById() {

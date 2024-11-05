@@ -7,7 +7,8 @@ import java.util.Map;
 
 public interface IBookService {
     Book createBook(BookRequest bookRequest);
-    List<Book> getAllBooks();
+    List<?> getAllBooks(String language);
+
     Book getBookById(Long id);
     Book updateBook(Map<String, Object> updates, Long id);
     void deleteBook(Long id);

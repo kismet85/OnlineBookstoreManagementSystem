@@ -31,6 +31,10 @@ public class BookService implements IBookService {
     @Autowired
     private final BookRepository bookRepository;
     @Autowired
+    private final BookRepository bookJpRepository;
+    @Autowired
+    private final BookRepository bookFaRepository;
+    @Autowired
     private final AuthorRepository authorRepository;
     @Autowired
     private final PublisherRepository publisherRepository;
@@ -99,8 +103,12 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public List<?> getAllBooks(String language) {
+        return switch (language) {
+            case "ja" -> bookJpRepository.findAll();
+            case "fa" -> bookFaRepository.findAll();
+            default -> bookRepository.findAll();
+        };
     }
 
     @Override
