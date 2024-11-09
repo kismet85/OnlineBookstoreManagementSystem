@@ -45,7 +45,7 @@ public class PublisherService implements IPublisherService{
     @Override
     public Publisher getPublisherById(Long id) {
         if (!publisherRepository.findById(id).isPresent()) {
-            throw new UserNotFoundException("Publisher not found with id: " + id);
+            throw new PublisherNotFoundException("Publisher not found with id: " + id);
         }
         return publisherRepository.findById(id).get();
     }
