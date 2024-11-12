@@ -43,7 +43,7 @@ public class BookController {
         try {
             Book book = iBookService.getBookById(id);
             return new ResponseEntity<>(book, HttpStatus.OK);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException e) { 
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
