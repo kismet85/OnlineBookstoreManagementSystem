@@ -431,4 +431,79 @@ class BookServiceTest {
         verify(bookRepository, never()).findBooksByAuthorsLastNameContainingIgnoreCase(anyString());
     }
 
+    @Test
+    void testGetBooksByAuthor() {
+        String authorFirstName = "John";
+        String authorLastName = "Doe";
+
+
+        Author author = new Author();
+        author.setFirstName(authorFirstName);
+        author.setLastName(authorLastName);
+
+        Book book1 = new Book();
+        book1.setTitle("Book One");
+        Book book2 = new Book();
+        book2.setTitle("Book Two");
+
+
+        when(bookRepository.findBooksByAuthorsFirstNameContainingIgnoreCase(authorFirstName)).thenReturn(Arrays.asList(book1, book2));
+
+        List<Book> result = bookService.getBooksByAuthor(authorFirstName);
+
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Book One", result.get(0).getTitle());
+        assertEquals("Book Two", result.get(1).getTitle());
+
+        verify(bookRepository, times(1)).findBooksByAuthorsFirstNameContainingIgnoreCase(authorFirstName);
+    }
+
+
+
+
+
+    @Test
+    void testGetBooksByAuthor_NotFound() {
+        String authorFirstName = "John";
+        String authorLastName = "Doe";
+
+
+        when(bookRepository.findBooksByAuthorsFirstNameContainingIgnoreCase(authorFirstName))
+                .thenReturn(Collections.emptyList());
+
+
+        assertThrows(BookNotFoundException.class, () -> bookService.getBooksByAuthor(authorFirstName));
+
+
+        verify(bookRepository, times(1)).findBooksByAuthorsFirstNameContainingIgnoreCase(authorFirstName);
+    }
+
+
+    @Test
+    void testGetBooksByGenre() {
+        String genre = "Fiction";
+
+
+        Book book1 = new Book();
+        book1.setGenre(genre);
+        Book book2 = new Book();
+        book2.setGenre(genre);
+
+
+        when(bookRepository.findBooksByGenreContainingIgnoreCase(genre)).thenReturn(Arrays.asList(book1, book2));
+
+        List<Book> result = bookService.getBooksByGenre(genre);
+
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(genre, result.get(0).getGenre());
+        assertEquals(genre, result.get(1).getGenre());
+
+
+        verify(bookRepository, times(1)).findBooksByGenreContainingIgnoreCase(genre);
+    }
+
 }
