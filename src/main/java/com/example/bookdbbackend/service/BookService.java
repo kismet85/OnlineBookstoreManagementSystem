@@ -336,8 +336,10 @@ public class BookService implements IBookService {
         return books;
     }
 
-    @Override
     public List<Book> searchBooks(String searchTerm) {
+        if (searchTerm.length() < 3) {
+            throw new IllegalArgumentException("Search term must be at least 3 characters long");
+        }
 
         List<Book> booksByTitle = bookRepository.findBooksByTitleContainingIgnoreCase(searchTerm);
         List<Book> booksByPublisher = bookRepository.findBooksByPublisherName(searchTerm);
@@ -346,16 +348,11 @@ public class BookService implements IBookService {
         List<Book> booksByAuthor = bookRepository.findBooksByAuthorsFirstNameContainingIgnoreCase(searchTerm);
         List<Book> booksByAuthorLastName = bookRepository.findBooksByAuthorsLastNameContainingIgnoreCase(searchTerm);
 
-        if (searchTerm.length() < 3) {
-            throw new IllegalArgumentException("Search term must be at least 3 characters long");
-        }
-
         if (!booksByIsbn.isEmpty()) {
             return booksByIsbn;
         }
 
         List<Book> combinedResults = new ArrayList<>();
-
         combinedResults.addAll(booksByTitle);
         combinedResults.addAll(booksByPublisher);
         combinedResults.addAll(booksByGenre);
