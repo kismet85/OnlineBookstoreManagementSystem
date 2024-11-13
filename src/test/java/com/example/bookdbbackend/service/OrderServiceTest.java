@@ -3,7 +3,9 @@ package com.example.bookdbbackend.service;
 import com.example.bookdbbackend.dtos.OrderResponseDto;
 import com.example.bookdbbackend.exception.OrderAlreadyExistsException;
 import com.example.bookdbbackend.exception.OrderNotFoundException;
+import com.example.bookdbbackend.model.Book;
 import com.example.bookdbbackend.model.Order;
+import com.example.bookdbbackend.model.OrderItem;
 import com.example.bookdbbackend.model.User;
 import com.example.bookdbbackend.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,6 +74,35 @@ class OrderServiceTest {
 
     @Test
     void testGetOrderById() {
+        Long id = 1L;
+        Order order = new Order();
+        order.setOrder_id(id);
+        order.setTotal(BigDecimal.valueOf(100.00));
+        order.setOrderDate(LocalDate.now());
+
+        User user = new User();
+        user.setEmail("test@example.com");
+        order.setUser(user);
+
+        Book book = new Book();
+        book.setTitle("Test Book");
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setBook(book);
+        order.setOrderItems(List.of(orderItem));
+
+        when(orderRepository.findById(id)).thenReturn(Optional.of(order));
+
+        OrderResponseDto result = orderService.getOrderById(id);
+
+        assertNotNull(result);
+        assertEquals(order.getTotal(), result.getTotal());
+        assertEquals(order.getOrderDate(), result.getOrderDate());
+        assertEquals(order.getUser().getEmail(), result.getUserEmail());
+        assertEquals(1, result.getOrderItems().size());
+        assertEquals(book.getTitle(), result.getOrderItems().get(0).getBookTitle());
+
+        verify(orderRepository, times(1)).findById(id);
     }
 
     @Test

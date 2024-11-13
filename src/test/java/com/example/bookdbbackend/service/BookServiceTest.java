@@ -96,7 +96,7 @@ class BookServiceTest {
         AuthorRequest authorRequest = new AuthorRequest();
         authorRequest.setFirstName("John");
         authorRequest.setLastName("Doe");
-        bookRequest.setAuthors(Collections.singletonList(authorRequest));
+        bookRequest.setAuthors(Collections.singletonList(authorRequest)); // Initialize authors list
 
         InventoryRequest inventoryRequest = new InventoryRequest();
         inventoryRequest.setStockLevelUsed(10);
@@ -122,6 +122,53 @@ class BookServiceTest {
         assertNotNull(result);
         verify(inventoryRepository, times(1)).save(any(Inventory.class));
         verify(publisherRepository, times(1)).save(any(Publisher.class));
+        verify(authorRepository, times(1)).save(any(Author.class));
+        verify(bookRepository, times(1)).save(any(Book.class));
+    }
+    @Test
+    void testCreateBook_WithExistingPublisher() {
+        BookRequest bookRequest = new BookRequest();
+        bookRequest.setTitle("Test Book");
+        bookRequest.setIsbn("1234567890");
+        bookRequest.setGenre("Fiction");
+        bookRequest.setType("Hardcover");
+        bookRequest.setPublicationYear(2021);
+        bookRequest.setPrice(BigDecimal.valueOf(19.99));
+        bookRequest.setBookCondition("New");
+        bookRequest.setReserved(false);
+        bookRequest.setImageUrl("http://example.com/image.jpg");
+        bookRequest.setPublisherId(1L);
+
+        // Initialize authors list
+        AuthorRequest authorRequest = new AuthorRequest();
+        authorRequest.setFirstName("John");
+        authorRequest.setLastName("Doe");
+        bookRequest.setAuthors(Collections.singletonList(authorRequest));
+
+        InventoryRequest inventoryRequest = new InventoryRequest();
+        inventoryRequest.setStockLevelUsed(10);
+        inventoryRequest.setStockLevelNew(5);
+        inventoryRequest.setReservedStock(2);
+        bookRequest.setInventory(inventoryRequest);
+
+        Inventory inventory = new Inventory();
+        when(inventoryRepository.save(any(Inventory.class))).thenReturn(inventory);
+
+        Publisher publisher = new Publisher();
+        when(publisherRepository.findById(1L)).thenReturn(Optional.of(publisher));
+
+        Author author = new Author();
+        when(authorRepository.findByFirstNameAndLastName(anyString(), anyString())).thenReturn(Optional.empty());
+        when(authorRepository.save(any(Author.class))).thenReturn(author);
+
+        Book book = new Book();
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+
+        Book result = bookService.createBook(bookRequest);
+
+        assertNotNull(result);
+        verify(inventoryRepository, times(1)).save(any(Inventory.class));
+        verify(publisherRepository, times(1)).findById(1L);
         verify(authorRepository, times(1)).save(any(Author.class));
         verify(bookRepository, times(1)).save(any(Book.class));
     }
