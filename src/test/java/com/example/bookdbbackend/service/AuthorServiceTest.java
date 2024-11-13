@@ -13,8 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class AuthorServiceTest {
@@ -39,6 +38,27 @@ class AuthorServiceTest {
 
         assertEquals(authors, result);
         verify(authorRepository, times(1)).findAll();
+    }
+    @Test
+    void testGetAuthorById() {
+        Author author = new Author();
+        author.setAuthor_id(1L);
+
+        when(authorRepository.findById(1L)).thenReturn(Optional.of(author));
+
+        Author result = authorService.getAuthorById(1L);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getAuthor_id());
+        verify(authorRepository, times(2)).findById(1L);
+    }
+
+    @Test
+    void testGetAuthorByIdNotFound() {
+        when(authorRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> authorService.getAuthorById(1L));
+        verify(authorRepository, times(1)).findById(1L);
     }
 
     @Test

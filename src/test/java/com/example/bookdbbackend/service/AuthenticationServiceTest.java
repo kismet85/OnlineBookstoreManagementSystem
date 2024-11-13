@@ -3,7 +3,9 @@ package com.example.bookdbbackend.service;
 import com.example.bookdbbackend.dtos.LoginUserDto;
 import com.example.bookdbbackend.dtos.RegisterUserDto;
 import com.example.bookdbbackend.exception.UserAlreadyExistsException;
+
 import com.example.bookdbbackend.model.User;
+
 import com.example.bookdbbackend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -102,4 +104,5 @@ class AuthenticationServiceTest {
         verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(userRepository, times(1)).findUserByEmail(input.getEmail());
     }
+
 }
