@@ -30,13 +30,12 @@ public class OrderController {
     private final UserDetailsService userDetailsService;
     private final UserService userService;
     private final BookService bookService;
-    private final OrderService orderService;
 
     private final IOrderService iOrderService;
 
     private final InventoryService inventoryService;
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
-    public OrderController(OrderRepository orderRepository, OrderItemRepository orderItemRepository, IUserService iUserService, JwtService jwtService, UserDetailsService userDetailsService, UserService userService, BookService bookService, OrderService orderService, IOrderService iOrderService, InventoryService inventoryService) {
+    public OrderController(OrderRepository orderRepository, OrderItemRepository orderItemRepository, IUserService iUserService, JwtService jwtService, UserDetailsService userDetailsService, UserService userService, BookService bookService, IOrderService iOrderService, InventoryService inventoryService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.iUserService = iUserService;
@@ -44,7 +43,6 @@ public class OrderController {
         this.userDetailsService = userDetailsService;
         this.userService = userService;
         this.bookService = bookService;
-        this.orderService = orderService;
         this.iOrderService = iOrderService;
         this.inventoryService = inventoryService;
     }
@@ -67,7 +65,7 @@ public class OrderController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        return new ResponseEntity<>(orderService.getAllOrders(), HttpStatus.OK);
+        return new ResponseEntity<>(iOrderService.getAllOrders(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -107,7 +105,7 @@ public class OrderController {
         }
 
         User user = userService.getUserByEmail(username);
-        List<Order> orders = orderService.getOrdersByUserId(user.getUser_id());
+        List<Order> orders = iOrderService.getOrdersByUserId(user.getUser_id());
 
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
@@ -133,7 +131,7 @@ public class OrderController {
 
         try {
             logger.info("Saving order to database...");
-            order = orderService.addOrder(order);
+            order = iOrderService.addOrder(order);
         } catch (Exception e) {
             logger.error("Error while saving order to database", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
