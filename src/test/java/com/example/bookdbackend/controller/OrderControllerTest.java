@@ -9,6 +9,7 @@ import com.example.bookdbbackend.service.IOrderService;
 
 import com.example.bookdbbackend.service.JwtService;
 import com.example.bookdbbackend.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,6 +26,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 class OrderControllerTest {
@@ -258,6 +260,41 @@ class OrderControllerTest {
     }
 
     @Test
+    void addOrder_InvalidUserId() {
+        OrderDto orderDto = new OrderDto();
+        orderDto.setUser_id(999L); // Non-existent user ID
+        orderDto.setOrderItems(new ArrayList<>());
+
+        when(jwtService.extractUsername("validToken")).thenReturn(USER_EMAIL);
+        when(jwtService.isTokenValid(anyString(), any(UserDetails.class))).thenReturn(true);
+        when(userDetailsService.loadUserByUsername(USER_EMAIL)).thenReturn(regularUser);
+        when(userService.getUserById(orderDto.getUser_id())).thenReturn(null);
+
+        ResponseEntity<Order> response = orderController.addOrder(orderDto, VALID_TOKEN);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void addOrder_OrderCreationFailure() {
+        OrderDto orderDto = new OrderDto();
+        orderDto.setUser_id(regularUser.getUser_id());
+        orderDto.setOrderItems(new ArrayList<>());
+
+        when(jwtService.extractUsername("validToken")).thenReturn(USER_EMAIL);
+        when(jwtService.isTokenValid(anyString(), any(UserDetails.class))).thenReturn(true);
+        when(userDetailsService.loadUserByUsername(USER_EMAIL)).thenReturn(regularUser);
+        when(userService.getUserById(orderDto.getUser_id())).thenReturn(regularUser);
+        when(iOrderService.addOrder(any(Order.class))).thenThrow(new RuntimeException("Order creation failed"));
+
+        ResponseEntity<Order> response = orderController.addOrder(orderDto, VALID_TOKEN);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
     void deleteOrder_Success() {
         Long orderId = 1L;
 
@@ -297,5 +334,37 @@ class OrderControllerTest {
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals("Access denied", response.getBody());
+    }
+
+    @Test
+    void deleteOrder_OrderNotFound() {
+        Long orderId = 999L; // Non-existent order ID
+
+        when(jwtService.extractUsername("validToken")).thenReturn(ADMIN_EMAIL);
+        when(jwtService.isTokenValid(anyString(), any(UserDetails.class))).thenReturn(true);
+        when(userDetailsService.loadUserByUsername(ADMIN_EMAIL)).thenReturn(adminUser);
+
+        doThrow(new EntityNotFoundException("Order not found")).when(iOrderService).deleteOrder(orderId);
+
+        ResponseEntity<String> response = orderController.deleteOrder(orderId, VALID_TOKEN);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Order not found", response.getBody());
+    }
+
+    @Test
+    void deleteOrder_DeletionFailure() {
+        Long orderId = 1L;
+
+        when(jwtService.extractUsername("validToken")).thenReturn(ADMIN_EMAIL);
+        when(jwtService.isTokenValid(anyString(), any(UserDetails.class))).thenReturn(true);
+        when(userDetailsService.loadUserByUsername(ADMIN_EMAIL)).thenReturn(adminUser);
+
+        doThrow(new RuntimeException("Deletion failed")).when(iOrderService).deleteOrder(orderId);
+
+        ResponseEntity<String> response = orderController.deleteOrder(orderId, VALID_TOKEN);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("An error occurred while deleting the order", response.getBody());
     }
 }

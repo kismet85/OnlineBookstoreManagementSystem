@@ -122,6 +122,10 @@ public class OrderController {
 
         logger.info("User ID: {}", orderDto.getUser_id());
         User user = userService.getUserById(orderDto.getUser_id());
+        if (user == null) {
+            logger.error("User not found for ID: {}", orderDto.getUser_id());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         logger.info("User email: {}", user.getEmail());
 
         logger.info("Creating new order for user ID: {}", orderDto.getUser_id());
