@@ -114,6 +114,26 @@ class BookControllerTest {
     }
 
     @Test
+    void testGetBooksByTitle_NotFound() {
+        String title = "test";
+        when(iBookService.getBooksByTitle(title)).thenThrow(new RuntimeException());
+
+        ResponseEntity<List<Book>> response = bookController.getBooksByTitle(title);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void testGetBookByIsbn_NotFound() {
+        String isbn = "1234567890";
+        when(iBookService.getBookByIsbn(isbn)).thenThrow(new RuntimeException());
+
+        ResponseEntity<Book> response = bookController.getBookByIsbn(isbn);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
     void testGetBookByIsbn() {
         String isbn = "1234567890";
         Book book = new Book();
@@ -134,6 +154,16 @@ class BookControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(iBookService, times(1)).getBooksByGenre(genre);
+    }
+
+    @Test
+    void testGetBooksByGenre_NotFound() {
+        String genre = "test";
+        when(iBookService.getBooksByGenre(genre)).thenThrow(new RuntimeException());
+
+        ResponseEntity<List<Book>> response = bookController.getBooksByGenre(genre);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
@@ -473,5 +503,24 @@ class BookControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(bookRequest, response.getBody());
         verify(iBookService, times(1)).createDummyBook();
+    }
+
+    @Test
+    void testCreateDummyBook_Forbidden() {
+        String token = "Bearer validToken";
+        String actualToken = "validToken";
+        String username = "regularUser";
+
+        UserDetails userDetails = new User(username, "password", Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+
+        when(jwtService.extractUsername(actualToken)).thenReturn(username);
+        when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
+        when(jwtService.isTokenValid(actualToken, userDetails)).thenReturn(true);
+
+        ResponseEntity<?> response = bookController.createDummyBook(token);
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals("Access denied", response.getBody());
+        verify(iBookService, never()).createDummyBook();
     }
 }
