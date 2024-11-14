@@ -2,9 +2,14 @@ package com.example.bookdbackend.controller;
 
 import com.example.bookdbbackend.controller.OrderController;
 import com.example.bookdbbackend.dtos.OrderDto;
+import com.example.bookdbbackend.dtos.OrderItemDto;
 import com.example.bookdbbackend.dtos.OrderResponseDto;
+import com.example.bookdbbackend.model.Book;
 import com.example.bookdbbackend.model.Order;
+import com.example.bookdbbackend.model.OrderItem;
 import com.example.bookdbbackend.model.User;
+import com.example.bookdbbackend.repository.OrderItemRepository;
+import com.example.bookdbbackend.service.BookService;
 import com.example.bookdbbackend.service.IOrderService;
 
 import com.example.bookdbbackend.service.JwtService;
@@ -20,14 +25,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 class OrderControllerTest {
 
@@ -40,7 +46,12 @@ class OrderControllerTest {
     @Mock
     private UserService userService;
     @Mock
+    private BookService bookService;
+    @Mock
     private UserDetailsService userDetailsService;
+
+    @Mock
+    private OrderItemRepository orderItemRepository;
 
     @InjectMocks
     private OrderController orderController;
@@ -241,6 +252,42 @@ class OrderControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(order, response.getBody());
+    }
+
+    @Test
+    void addOrder_ValidOrderItems() {
+        // Arrange
+        OrderDto orderDto = new OrderDto();
+        orderDto.setUser_id(regularUser.getUser_id());
+
+        List<OrderItemDto> orderItemDtos = new ArrayList<>();
+        OrderItemDto orderItemDto = new OrderItemDto();
+        orderItemDto.setBook_id(1L);
+        orderItemDto.setQuantity(1);
+        orderItemDto.setPrice(BigDecimal.valueOf(100.0));
+        orderItemDtos.add(orderItemDto);
+        orderDto.setOrderItems(orderItemDtos);
+
+        Order order = new Order();
+        order.setOrder_id(1L);
+
+        when(jwtService.extractUsername("validToken")).thenReturn(USER_EMAIL);
+        when(jwtService.isTokenValid(anyString(), any(UserDetails.class))).thenReturn(true);
+        when(userDetailsService.loadUserByUsername(USER_EMAIL)).thenReturn(regularUser);
+        when(userService.getUserById(orderDto.getUser_id())).thenReturn(regularUser);
+        when(bookService.getBookById(anyLong())).thenReturn(new Book());
+        when(orderItemRepository.save(any(OrderItem.class))).thenReturn(new OrderItem());
+        when(iOrderService.addOrder(any(Order.class))).thenReturn(order);
+
+        // Act
+        ResponseEntity<Order> response = orderController.addOrder(orderDto, VALID_TOKEN);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        verify(bookService, times(1)).getBookById(anyLong());
+        verify(orderItemRepository, times(1)).save(any(OrderItem.class));
+        verify(iOrderService, times(1)).addOrder(any(Order.class));
     }
 
     @Test

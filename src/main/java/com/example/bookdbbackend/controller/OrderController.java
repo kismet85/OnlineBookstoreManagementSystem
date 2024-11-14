@@ -141,12 +141,6 @@ public class OrderController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (order != null && order.getOrder_id() != null) {
-            logger.info("Order saved with ID: {}", order.getOrder_id());
-        } else {
-            logger.info("Order not saved. Check the addOrder method in the orderService.");
-        }
-
 
         List<OrderItem> orderItems = new ArrayList<>();
         for (OrderItemDto orderItemDto : orderDto.getOrderItems()) {
