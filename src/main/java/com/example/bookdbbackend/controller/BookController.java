@@ -19,6 +19,9 @@ import com.example.bookdbbackend.model.Book;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controller for handling book-related requests.
+ */
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
@@ -28,6 +31,12 @@ public class BookController {
     private final UserDetailsService userDetailsService;
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
+    /**
+     * Endpoint for getting all books.
+     *
+     * @param language the language for the response
+     * @return a list of all books
+     */
     @GetMapping
     public ResponseEntity<List<?>> getBooks(@RequestHeader("Accept-Language") String language) {
         try {
@@ -38,22 +47,41 @@ public class BookController {
         }
     }
 
+    /**
+     * Endpoint for getting a book by ID.
+     *
+     * @param id the ID of the book
+     * @return the book with the specified ID
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Long id) {
         try {
             Book book = iBookService.getBookById(id);
             return new ResponseEntity<>(book, HttpStatus.OK);
-        } catch (RuntimeException e) { 
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
+    /**
+     * Endpoint for searching books by a query.
+     *
+     * @param query the search query
+     * @return a list of books matching the query
+     */
     @GetMapping("/search")
     public ResponseEntity<List<Book>> searchBooks(@RequestParam String query) {
         List<Book> books = iBookService.searchBooks(query);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
+    /**
+     * Endpoint for adding a new book.
+     *
+     * @param bookRequest the book request data
+     * @param token the JWT token from the Authorization header
+     * @return the created book
+     */
     @PostMapping
     public ResponseEntity<?> addBook(@RequestBody BookRequest bookRequest, @RequestHeader("Authorization") String token) {
         try {
@@ -85,7 +113,13 @@ public class BookController {
         }
     }
 
-
+    /**
+     * Endpoint for deleting a book by ID.
+     *
+     * @param id the ID of the book
+     * @param token the JWT token from the Authorization header
+     * @return a response indicating the result of the deletion
+     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         String actualToken = token.replace("Bearer ", "");
@@ -114,6 +148,12 @@ public class BookController {
         }
     }
 
+    /**
+     * Endpoint for creating a dummy book.
+     *
+     * @param token the JWT token from the Authorization header
+     * @return the created dummy book request
+     */
     @GetMapping("/dummy")
     public ResponseEntity<?> createDummyBook(@RequestHeader("Authorization") String token) {
         String actualToken = token.replace("Bearer ", "");
@@ -136,6 +176,14 @@ public class BookController {
         return new ResponseEntity<>(bookRequest, HttpStatus.OK);
     }
 
+    /**
+     * Endpoint for updating a book by ID.
+     *
+     * @param updates the updates to apply to the book
+     * @param id the ID of the book
+     * @param token the JWT token from the Authorization header
+     * @return the updated book
+     */
     @PostMapping("/{id}")
     public ResponseEntity<?> updateBook(@RequestBody Map<String, Object> updates, @PathVariable Long id, @RequestHeader("Authorization") String token) {
 
@@ -181,7 +229,12 @@ public class BookController {
         }
     }
 
-
+    /**
+     * Endpoint for getting books by title.
+     *
+     * @param title the title of the books
+     * @return a list of books with the specified title
+     */
     @GetMapping("/title/{title}")
     public ResponseEntity<List<Book>> getBooksByTitle(@PathVariable String title) {
         try {
@@ -192,6 +245,12 @@ public class BookController {
         }
     }
 
+    /**
+     * Endpoint for getting a book by ISBN.
+     *
+     * @param isbn the ISBN of the book
+     * @return the book with the specified ISBN
+     */
     @GetMapping("/isbn/{isbn}")
     public ResponseEntity<Book> getBookByIsbn(@PathVariable String isbn) {
         try {
@@ -202,6 +261,12 @@ public class BookController {
         }
     }
 
+    /**
+     * Endpoint for getting books by genre.
+     *
+     * @param genre the genre of the books
+     * @return a list of books with the specified genre
+     */
     @GetMapping("/genre/{genre}")
     public ResponseEntity<List<Book>> getBooksByGenre(@PathVariable String genre) {
         try {
@@ -211,6 +276,13 @@ public class BookController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    /**
+     * Endpoint for getting books by publisher.
+     *
+     * @param publisher the publisher of the books
+     * @return a list of books with the specified publisher
+     */
     @GetMapping("/publisher/{publisher}")
     public ResponseEntity<List<Book>> getBooksByPublisher(@PathVariable String publisher) {
         try {

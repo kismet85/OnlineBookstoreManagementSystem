@@ -20,6 +20,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller for handling order-related requests.
+ */
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
@@ -30,11 +33,23 @@ public class OrderController {
     private final UserDetailsService userDetailsService;
     private final UserService userService;
     private final BookService bookService;
-
     private final IOrderService iOrderService;
-
     private final InventoryService inventoryService;
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+
+    /**
+     * Constructor for OrderController.
+     *
+     * @param orderRepository the order repository
+     * @param orderItemRepository the order item repository
+     * @param iUserService the user service
+     * @param jwtService the JWT service
+     * @param userDetailsService the user details service
+     * @param userService the user service
+     * @param bookService the book service
+     * @param iOrderService the order service
+     * @param inventoryService the inventory service
+     */
     public OrderController(OrderRepository orderRepository, OrderItemRepository orderItemRepository, IUserService iUserService, JwtService jwtService, UserDetailsService userDetailsService, UserService userService, BookService bookService, IOrderService iOrderService, InventoryService inventoryService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
@@ -47,12 +62,16 @@ public class OrderController {
         this.inventoryService = inventoryService;
     }
 
+    /**
+     * Endpoint for getting all orders.
+     *
+     * @param token the JWT token from the Authorization header
+     * @return a list of all orders
+     */
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders(@RequestHeader("Authorization") String token) {
-
         String actualToken = token.replace("Bearer ", "");
         String username = jwtService.extractUsername(actualToken);
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         if (!jwtService.isTokenValid(actualToken, userDetails)) {
@@ -68,11 +87,17 @@ public class OrderController {
         return new ResponseEntity<>(iOrderService.getAllOrders(), HttpStatus.OK);
     }
 
+    /**
+     * Endpoint for getting an order by ID.
+     *
+     * @param id the ID of the order
+     * @param token the JWT token from the Authorization header
+     * @return the order with the specified ID
+     */
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         String actualToken = token.replace("Bearer ", "");
         String username = jwtService.extractUsername(actualToken);
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         if (!jwtService.isTokenValid(actualToken, userDetails)) {
@@ -94,6 +119,12 @@ public class OrderController {
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
+    /**
+     * Endpoint for getting orders of the authenticated user.
+     *
+     * @param token the JWT token from the Authorization header
+     * @return a list of orders of the authenticated user
+     */
     @GetMapping("/me")
     public ResponseEntity<List<Order>> getOrders(@RequestHeader("Authorization") String token) {
         String actualToken = token.replace("Bearer ", "");
@@ -110,8 +141,15 @@ public class OrderController {
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
+    /**
+     * Endpoint for adding a new order.
+     *
+     * @param orderDto the order data transfer object
+     * @param token the JWT token from the Authorization header
+     * @return the created order
+     */
     @PostMapping("/addOrder")
-    public ResponseEntity<Order> addOrder(@RequestBody OrderDto orderDto, @RequestHeader("Authorization") String token){
+    public ResponseEntity<Order> addOrder(@RequestBody OrderDto orderDto, @RequestHeader("Authorization") String token) {
         String actualToken = token.replace("Bearer ", "");
         String username = jwtService.extractUsername(actualToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -141,13 +179,11 @@ public class OrderController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-
         List<OrderItem> orderItems = new ArrayList<>();
         for (OrderItemDto orderItemDto : orderDto.getOrderItems()) {
             Book book = bookService.getBookById(orderItemDto.getBook_id());
 
             OrderItem orderItem = new OrderItem();
-
             orderItem.setOrder(order);
             orderItem.setBook(book);
             orderItem.setQuantity(orderItemDto.getQuantity());
@@ -162,19 +198,23 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    /**
+     * Endpoint for deleting an order by ID.
+     *
+     * @param id the ID of the order
+     * @param token the JWT token from the Authorization header
+     * @return a response indicating the result of the deletion
+     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         String actualToken = token.replace("Bearer ", "");
         String username = jwtService.extractUsername(actualToken);
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        // Check if the token is valid
         if (!jwtService.isTokenValid(actualToken, userDetails)) {
             return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
         }
 
-        // Check if the user is an admin
         boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         if (!isAdmin) {
             return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
@@ -189,5 +229,4 @@ public class OrderController {
             return new ResponseEntity<>("An error occurred while deleting the order", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

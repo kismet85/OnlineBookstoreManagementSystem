@@ -14,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * Controller for handling inventory-related requests.
+ */
 @RestController
 @RequestMapping("/inventory")
 @RequiredArgsConstructor
@@ -25,7 +27,12 @@ public class InventoryController {
     private final UserDetailsService userDetailsService;
     private final JwtService jwtService;
 
-
+    /**
+     * Endpoint for getting inventory by ID.
+     *
+     * @param id the ID of the inventory
+     * @return the inventory with the specified ID
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Inventory> getInventoryById(@PathVariable Long id) {
         try {
@@ -36,7 +43,14 @@ public class InventoryController {
         }
     }
 
-
+    /**
+     * Endpoint for updating inventory by ID.
+     *
+     * @param updates the updates to apply to the inventory
+     * @param id the ID of the inventory
+     * @param token the JWT token from the Authorization header
+     * @return the updated inventory
+     */
     @PostMapping("/{id}")
     public ResponseEntity<Inventory> updateInventory(@RequestBody Map<String, Object> updates, @PathVariable Long id, @RequestHeader("Authorization") String token) {
         String actualToken = token.replace("Bearer ", "");

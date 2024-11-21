@@ -9,11 +9,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
+/**
+ * Entity class representing a user.
+ */
 @Entity
 @Table(name = "users")
 @Getter
@@ -21,22 +22,64 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User implements UserDetails {
+
+        /**
+         * The ID of the user.
+         */
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long user_id;
+
+        /**
+         * The first name of the user.
+         */
         private String first_name;
+
+        /**
+         * The last name of the user.
+         */
         private String last_name;
+
+        /**
+         * The email of the user.
+         */
         private String email;
+
+        /**
+         * The street number of the user's address.
+         */
         private Integer street_number;
+
+        /**
+         * The street name of the user's address.
+         */
         private String street_name;
+
+        /**
+         * The phone number of the user.
+         */
         private String phone_number;
+
+        /**
+         * The postal code of the user's address.
+         */
         private Integer postal_code;
+
+        /**
+         * The province of the user's address.
+         */
         private String province;
+
+        /**
+         * The password of the user.
+         */
         private String password;
 
+        /**
+         * The role of the user.
+         */
         @Column(nullable = false)
         private String role = "USER";
-
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {

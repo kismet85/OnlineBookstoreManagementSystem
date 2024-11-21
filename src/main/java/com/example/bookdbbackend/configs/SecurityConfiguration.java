@@ -12,11 +12,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
 import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * Security configuration class for setting up HTTP security and CORS.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -24,11 +26,24 @@ public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /**
+     * Constructor for SecurityConfiguration.
+     *
+     * @param authenticationProvider the authentication provider
+     * @param jwtAuthenticationFilter the JWT authentication filter
+     */
     public SecurityConfiguration(AuthenticationProvider authenticationProvider, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
+    /**
+     * Configures the security filter chain.
+     *
+     * @param http the HttpSecurity object
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs while configuring the security filter chain
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -60,6 +75,11 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    /**
+     * Configures CORS settings.
+     *
+     * @return the configured CorsConfigurationSource
+     */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
