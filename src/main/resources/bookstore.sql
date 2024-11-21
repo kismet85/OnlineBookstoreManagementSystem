@@ -1,11 +1,4 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: mysql.metropolia.fi
--- Generation Time: 21.11.2024 klo 09:53
--- Palvelimen versio: 10.5.27-MariaDB
--- PHP Version: 8.3.13
+
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
