@@ -29,7 +29,7 @@ public class SecurityConfiguration {
     /**
      * Constructor for SecurityConfiguration.
      *
-     * @param authenticationProvider the authentication provider
+     * @param authenticationProvider  the authentication provider
      * @param jwtAuthenticationFilter the JWT authentication filter
      */
     public SecurityConfiguration(AuthenticationProvider authenticationProvider, JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -53,7 +53,7 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/auth/**", "/api/v1/auth/**", "/v2/api-docs", "/v3/api-docs", "/v3/api-docs/**", "/swagger-ui.html/**", "/swagger-resources", "/swagger-resources/**", "/swagger-resources/**", "/configuration/ui", "/configuration/security", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/authors").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/orders/addOrder").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/orders/me").permitAll()
@@ -68,10 +68,12 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET, "/books/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/authors/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/authors/{id}/books").permitAll()
-                                .requestMatchers(HttpMethod.GET,"/inventory/{id}").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/inventory/{id}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/inventory/{id}").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/inventory/{id}").permitAll()
                                 .anyRequest().hasRole("ADMIN")
-                );
+                )
+                .formLogin(form -> form.disable())
+                .httpBasic(httpBasic -> httpBasic.disable());
         return http.build();
     }
 
