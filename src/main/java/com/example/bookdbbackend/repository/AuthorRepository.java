@@ -5,6 +5,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+/**
+ * Repository interface for handling author-related database operations.
+ */
 public interface AuthorRepository extends JpaRepository<Author, Long> {
+
+    /**
+     * Finds an author by their first name and last name.
+     *
+     * @param firstName the first name of the author
+     * @param lastName the last name of the author
+     * @return an Optional containing the found author, or empty if no author is found
+     */
     Optional<Author> findByFirstNameAndLastName(String firstName, String lastName);
 }

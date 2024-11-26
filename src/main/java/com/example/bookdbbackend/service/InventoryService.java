@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+/**
+ * Service class for handling inventory-related operations.
+ */
 @Service
 @RequiredArgsConstructor
 public class InventoryService implements IInventoryService {
@@ -16,6 +19,14 @@ public class InventoryService implements IInventoryService {
     @Autowired
     private final InventoryRepository inventoryRepository;
 
+    /**
+     * Updates an inventory with the specified updates.
+     *
+     * @param updates the updates to apply
+     * @param id the ID of the inventory to update
+     * @return the updated inventory
+     * @throws InventoryNotFoundException if the inventory is not found
+     */
     @Override
     public Inventory updateInventory(Map<String, Object> updates, Long id) {
         Inventory inventory = inventoryRepository.findById(id).orElse(null);
@@ -34,6 +45,14 @@ public class InventoryService implements IInventoryService {
         }
         return inventoryRepository.save(inventory);
     }
+
+    /**
+     * Retrieves an inventory by its ID.
+     *
+     * @param id the ID of the inventory
+     * @return the inventory with the specified ID
+     * @throws InventoryNotFoundException if the inventory is not found
+     */
     @Override
     public Inventory getInventory(Long id) {
         if (!inventoryRepository.findById(id).isPresent()) {
@@ -42,5 +61,3 @@ public class InventoryService implements IInventoryService {
         return inventoryRepository.findById(id).get();
     }
 }
-
-

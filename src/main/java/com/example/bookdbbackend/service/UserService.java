@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.lang.module.InvalidModuleDescriptorException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service class for handling user-related operations.
+ */
 @Service
 public class UserService implements IUserService {
 
@@ -23,12 +25,23 @@ public class UserService implements IUserService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    /**
+     * Retrieves all users, excluding their passwords.
+     *
+     * @return a list of all users with passwords set to null
+     */
     @Override
     public List<User> getUsers() {
-        // return user excluding the password
         return userRepository.findAll().stream().peek(user -> user.setPassword(null)).toList();
     }
 
+    /**
+     * Adds a new user.
+     *
+     * @param user the user to add
+     * @return the added user
+     * @throws UserAlreadyExistsException if a user with the same email already exists
+     */
     @Override
     public User addUser(User user) {
         if (userRepository.findUserByEmail(user.getEmail()).isPresent()) {
@@ -39,6 +52,14 @@ public class UserService implements IUserService {
         return userRepository.save(user);
     }
 
+    /**
+     * Updates a user with the specified updates.
+     *
+     * @param updates the updates to apply
+     * @param id the ID of the user to update
+     * @return the updated user
+     * @throws UserNotFoundException if the user is not found
+     */
     @Override
     public User updateUser(Map<String, Object> updates, Long id) {
         User user = getUserById(id);
@@ -77,12 +98,25 @@ public class UserService implements IUserService {
         return userRepository.save(user);
     }
 
+    /**
+     * Retrieves a user by their ID.
+     *
+     * @param id the ID of the user
+     * @return the user with the specified ID
+     * @throws UserNotFoundException if the user is not found
+     */
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
+    /**
+     * Deletes a user by their ID.
+     *
+     * @param id the ID of the user to delete
+     * @throws UserNotFoundException if the user is not found
+     */
     @Override
     public void deleteUser(Long id) {
         if (!userRepository.findById(id).isPresent()) {
@@ -91,22 +125,30 @@ public class UserService implements IUserService {
         userRepository.deleteById(id);
     }
 
+    /**
+     * Retrieves a user by their email.
+     *
+     * @param email the email of the user
+     * @return the user with the specified email
+     * @throws UserNotFoundException if the user is not found
+     */
     public User getUserByEmail(String email) {
         return userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
     }
 
+    /**
+     * Searches for users based on a search term.
+     *
+     * @param searchTerm the search term
+     * @return a list of users matching the search term
+     */
     @Override
     public List<User> searchUsers(String searchTerm) {
-
         List<User> usersByEmail = userRepository.getUserByEmailContainingIgnoreCase(searchTerm);
-
         List<User> combinedResults = new ArrayList<>();
-
         combinedResults.addAll(usersByEmail);
-
         combinedResults = new ArrayList<>(new HashSet<>(combinedResults));
-
         return combinedResults;
     }
 }

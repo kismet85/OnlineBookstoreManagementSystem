@@ -19,11 +19,13 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.*;
 
+/**
+ * Service class for handling book-related operations.
+ */
 @Service
 @RequiredArgsConstructor
 public class BookService implements IBookService {
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
-
 
     @Autowired
     private final BookRepository bookRepository;
@@ -38,7 +40,12 @@ public class BookService implements IBookService {
     @Autowired
     private final InventoryRepository inventoryRepository;
 
-
+    /**
+     * Creates a new book.
+     *
+     * @param bookRequest the book request details
+     * @return the created book
+     */
     @Override
     public Book createBook(BookRequest bookRequest) {
         Inventory inventory = new Inventory();
@@ -74,7 +81,6 @@ public class BookService implements IBookService {
             book.setPublisher(publisher);
         }
 
-
         Set<Author> authors = new HashSet<>();
         for (AuthorRequest authorRequest : bookRequest.getAuthors()) {
             Author author = new Author();
@@ -95,10 +101,22 @@ public class BookService implements IBookService {
         return bookRepository.save(book);
     }
 
+    /**
+     * Checks if a book already exists by its ID.
+     *
+     * @param id the ID of the book
+     * @return true if the book exists, false otherwise
+     */
     private boolean bookAlreadyExists(Long id) {
         return bookRepository.findById(id).isPresent();
     }
 
+    /**
+     * Retrieves all books based on the specified language.
+     *
+     * @param language the language code
+     * @return a list of books
+     */
     @Override
     public List<?> getAllBooks(String language) {
         return switch (language) {
@@ -108,6 +126,13 @@ public class BookService implements IBookService {
         };
     }
 
+    /**
+     * Retrieves a book by its ID.
+     *
+     * @param id the ID of the book
+     * @return the book with the specified ID
+     * @throws BookNotFoundException if the book is not found
+     */
     @Override
     public Book getBookById(Long id) {
         Optional<Book> book = bookRepository.findById(id);
@@ -118,6 +143,14 @@ public class BookService implements IBookService {
         return book.get();
     }
 
+    /**
+     * Updates a book with the specified updates.
+     *
+     * @param updates the updates to apply
+     * @param id the ID of the book to update
+     * @return the updated book
+     * @throws InvalidDataException if there is an error updating the book
+     */
     @Override
     public Book updateBook(Map<String, Object> updates, Long id) {
         try {
@@ -142,7 +175,6 @@ public class BookService implements IBookService {
                         break;
                     case "price":
                         // Explicitly parse the value as BigDecimal
-                        // This is kind of stupid because now the value is not really a big decimal
                         if (entry.getValue() instanceof Number) {
                             book.setPrice(BigDecimal.valueOf(((Number) entry.getValue()).doubleValue()));
                         }
@@ -192,20 +224,18 @@ public class BookService implements IBookService {
                         if (entry.getValue() instanceof List) {
                             List<?> authorUpdatesList = (List<?>) entry.getValue();
                             if (!authorUpdatesList.isEmpty() && authorUpdatesList.get(0) instanceof Map) {
-                                List<Map<String, Object>> authorUpdates = (List<Map<String, Object>>) authorUpdatesList; // Change to Map<String, Object> to allow for any type
+                                List<Map<String, Object>> authorUpdates = (List<Map<String, Object>>) authorUpdatesList;
                                 logger.info("Author updates: " + authorUpdates.toString());
 
                                 for (Map<String, Object> authorUpdate : authorUpdates) {
-                                    // Make sure to handle potential type issues with author_id
                                     Object authorIdObj = authorUpdate.get("author_id");
                                     if (authorIdObj instanceof Number) {
-                                        Long authorId = ((Number) authorIdObj).longValue(); // Use longValue() to convert Number to Long
+                                        Long authorId = ((Number) authorIdObj).longValue();
                                         logger.info("Author ID: " + authorId);
 
                                         Author author = authorRepository.findById(authorId)
                                                 .orElseThrow(() -> new AuthorNotFoundException("Author with id " + authorId + " not found"));
 
-                                        // Check for firstName and lastName with safe casting
                                         if (authorUpdate.containsKey("firstName")) {
                                             Object firstNameObj = authorUpdate.get("firstName");
                                             if (firstNameObj instanceof String) {
@@ -248,13 +278,18 @@ public class BookService implements IBookService {
 
             return bookRepository.save(book);
         } catch (Exception e) {
-              logger.error("Error updating book with ID " + id, e);
-                throw new InvalidDataException(e.getMessage());
+            logger.error("Error updating book with ID " + id, e);
+            throw new InvalidDataException(e.getMessage());
         }
     }
 
+    /**
+     * Creates a dummy book request.
+     *
+     * @return the dummy book request
+     */
     @Override
-    public BookRequest createDummyBook(){
+    public BookRequest createDummyBook() {
         BookRequest bookRequest = new BookRequest();
         bookRequest.setTitle("");
         bookRequest.setIsbn("");
@@ -282,6 +317,12 @@ public class BookService implements IBookService {
         return bookRequest;
     }
 
+    /**
+     * Deletes a book by its ID.
+     *
+     * @param id the ID of the book to delete
+     * @throws BookNotFoundException if the book is not found
+     */
     @Override
     public void deleteBook(Long id) {
         if (!bookAlreadyExists(id)) {
@@ -290,6 +331,13 @@ public class BookService implements IBookService {
         bookRepository.deleteById(id);
     }
 
+    /**
+     * Retrieves books by their title.
+     *
+     * @param title the title of the books
+     * @return a list of books with the specified title
+     * @throws BookNotFoundException if no books are found
+     */
     @Override
     public List<Book> getBooksByTitle(String title) {
         List<Book> books = bookRepository.findBooksByTitleContainingIgnoreCase(title);
@@ -299,7 +347,13 @@ public class BookService implements IBookService {
         return books;
     }
 
-
+    /**
+     * Retrieves a book by its ISBN.
+     *
+     * @param isbn the ISBN of the book
+     * @return the book with the specified ISBN
+     * @throws BookNotFoundException if the book is not found
+     */
     @Override
     public Book getBookByIsbn(String isbn) {
         Optional<Book> book = bookRepository.findBookByIsbn(isbn);
@@ -309,6 +363,13 @@ public class BookService implements IBookService {
         return book.get();
     }
 
+    /**
+     * Retrieves books by their author's name.
+     *
+     * @param author the author's name
+     * @return a list of books by the specified author
+     * @throws BookNotFoundException if no books are found
+     */
     @Override
     public List<Book> getBooksByAuthor(String author) {
         List<Book> books = bookRepository.findBooksByAuthorsFirstNameContainingIgnoreCase(author);
@@ -318,6 +379,13 @@ public class BookService implements IBookService {
         return books;
     }
 
+    /**
+     * Retrieves books by their genre.
+     *
+     * @param genre the genre of the books
+     * @return a list of books with the specified genre
+     * @throws BookNotFoundException if no books are found
+     */
     @Override
     public List<Book> getBooksByGenre(String genre) {
         List<Book> books = bookRepository.findBooksByGenreContainingIgnoreCase(genre);
@@ -327,6 +395,13 @@ public class BookService implements IBookService {
         return books;
     }
 
+    /**
+     * Retrieves books by their publisher's name.
+     *
+     * @param publisher the publisher's name
+     * @return a list of books by the specified publisher
+     * @throws BookNotFoundException if no books are found
+     */
     @Override
     public List<Book> getBooksByPublisherName(String publisher) {
         List<Book> books = bookRepository.findBooksByPublisherName(publisher);
@@ -336,6 +411,13 @@ public class BookService implements IBookService {
         return books;
     }
 
+    /**
+     * Searches for books based on a search term.
+     *
+     * @param searchTerm the search term
+     * @return a list of books matching the search term
+     * @throws IllegalArgumentException if the search term is less than 3 characters long
+     */
     public List<Book> searchBooks(String searchTerm) {
         if (searchTerm.length() < 3) {
             throw new IllegalArgumentException("Search term must be at least 3 characters long");
@@ -363,6 +445,4 @@ public class BookService implements IBookService {
 
         return combinedResults;
     }
-
-
 }
