@@ -53,7 +53,19 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/auth/**", "/api/v1/auth/**", "/v2/api-docs", "/v3/api-docs", "/v3/api-docs/**", "/swagger-ui.html/**", "/swagger-resources", "/swagger-resources/**", "/swagger-resources/**", "/configuration/ui", "/configuration/security", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                                .requestMatchers("/auth/**",
+                                        "/api/v1/auth/**",
+                                        "/v2/api-docs",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui.html/**",
+                                        "/swagger-resources",
+                                        "/swagger-resources/**",
+                                        "/swagger-resources/**",
+                                        "/configuration/ui",
+                                        "/configuration/security",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/authors").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/orders/addOrder").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/orders/me").permitAll()
