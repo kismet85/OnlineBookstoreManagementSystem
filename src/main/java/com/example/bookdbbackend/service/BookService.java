@@ -361,14 +361,14 @@ public class BookService implements IBookService {
      * @param inventoryUpdates the updates to apply
      */
     private void updateInventory(Inventory inventory, Map<String, Integer> inventoryUpdates) {
-        if (inventoryUpdates.containsKey("stockLevelUsed")) {
-            inventory.setStock_level_used(inventoryUpdates.get("stockLevelUsed"));
+        if (inventoryUpdates.containsKey("stock_level_used")) {
+            inventory.setStock_level_used(inventoryUpdates.get("stock_level_used"));
         }
-        if (inventoryUpdates.containsKey("stockLevelNew")) {
-            inventory.setStock_level_new(inventoryUpdates.get("stockLevelNew"));
+        if (inventoryUpdates.containsKey("stock_level_new")) {
+            inventory.setStock_level_new(inventoryUpdates.get("stock_level_new"));
         }
-        if (inventoryUpdates.containsKey("reservedStock")) {
-            inventory.setReserved_stock(inventoryUpdates.get("reservedStock"));
+        if (inventoryUpdates.containsKey("reserved_stock")) {
+            inventory.setReserved_stock(inventoryUpdates.get("reserved_stock"));
         }
         inventoryRepository.save(inventory);
     }
@@ -398,15 +398,15 @@ public class BookService implements IBookService {
     private void updateAuthors(Book book, List<Map<String, String>> authorUpdates) {
         Set<Author> authors = new HashSet<>();
         for (Map<String, String> authorUpdate : authorUpdates) {
-            Optional<Author> existingAuthor = authorRepository
-                    .findByFirstNameAndLastName(authorUpdate.get("firstName"), authorUpdate.get("lastName"));
+            Long authorId = Long.valueOf(authorUpdate.get("author_id"));
+            Optional<Author> existingAuthor = authorRepository.findById(authorId);
             if (existingAuthor.isPresent()) {
-                authors.add(existingAuthor.get());
-            } else {
-                Author author = new Author();
+                Author author = existingAuthor.get();
                 author.setFirstName(authorUpdate.get("firstName"));
                 author.setLastName(authorUpdate.get("lastName"));
                 authors.add(authorRepository.save(author));
+            } else {
+                logger.warn("Author with ID " + authorId + " not found");
             }
         }
         book.setAuthors(authors);

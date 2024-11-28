@@ -239,9 +239,9 @@ class BookServiceTest {
         updates.put("reserved", true);
 
         Map<String, Integer> inventoryUpdates = new HashMap<>();
-        inventoryUpdates.put("stockLevelUsed", 20);
-        inventoryUpdates.put("stockLevelNew", 10);
-        inventoryUpdates.put("reservedStock", 5);
+        inventoryUpdates.put("stock_level_used", 20);
+        inventoryUpdates.put("stock_level_new", 10);
+        inventoryUpdates.put("reserved_stock", 5);
         updates.put("inventory", inventoryUpdates);
 
         Map<String, String> publisherUpdates = new HashMap<>();
@@ -249,9 +249,9 @@ class BookServiceTest {
         publisherUpdates.put("country", "Updated Country");
         updates.put("publisher", publisherUpdates);
 
-        List<Map<String, Object>> authorUpdates = new ArrayList<>();
-        Map<String, Object> authorUpdate = new HashMap<>();
-        authorUpdate.put("author_id", 1L);
+        List<Map<String, String>> authorUpdates = new ArrayList<>();
+        Map<String, String> authorUpdate = new HashMap<>();
+        authorUpdate.put("author_id", "1");
         authorUpdate.put("firstName", "Updated First Name");
         authorUpdate.put("lastName", "Updated Last Name");
         authorUpdates.add(authorUpdate);
@@ -291,8 +291,6 @@ class BookServiceTest {
         verify(authorRepository, times(1)).findById(1L);
         verify(authorRepository, times(1)).save(author);
     }
-
-
     @Test
     void testUpdateBook_BookNotFound() {
         Long bookId = 1L;
