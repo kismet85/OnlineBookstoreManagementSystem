@@ -1,5 +1,6 @@
 package com.example.bookdbbackend.repository;
 
+import com.example.bookdbbackend.model.Author;
 import com.example.bookdbbackend.model.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -76,4 +77,5 @@ public interface BookRepository extends JpaRepository<Book, Long> {
      * @return a list of books with authors' last names containing the specified string
      */
     List<Book> findBooksByAuthorsLastNameContainingIgnoreCase(String author);
+
 }
