@@ -1,13 +1,11 @@
 package com.example.bookdbbackend.repository;
 
-import com.example.bookdbbackend.model.Book;
 import com.example.bookdbbackend.model.Inventory;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 
 /**
  * Repository interface for handling Inventory-related database operations.

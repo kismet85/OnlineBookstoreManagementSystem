@@ -39,7 +39,7 @@ class AuthControllerTest {
     private RegisterUserDto registerUserDto;
     private LoginUserDto loginUserDto;
     private static final String TEST_TOKEN = "test.jwt.token";
-    private static final long TEST_EXPIRATION = 3600000; // 1 hour in milliseconds
+    private static final long TEST_EXPIRATION = 3600000;
 
     @BeforeEach
     void setUp() {

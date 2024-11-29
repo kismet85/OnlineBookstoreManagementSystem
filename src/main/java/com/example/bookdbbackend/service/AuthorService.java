@@ -1,9 +1,7 @@
 package com.example.bookdbbackend.service;
 
-import com.example.bookdbbackend.exception.AuthorNotFoundException;
 import com.example.bookdbbackend.exception.UserNotFoundException;
 import com.example.bookdbbackend.model.Author;
-import com.example.bookdbbackend.model.Book;
 import com.example.bookdbbackend.repository.AuthorRepository;
 import com.example.bookdbbackend.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;

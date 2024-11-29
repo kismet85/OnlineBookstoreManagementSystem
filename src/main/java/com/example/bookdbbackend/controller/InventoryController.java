@@ -1,7 +1,6 @@
 package com.example.bookdbbackend.controller;
 
 import com.example.bookdbbackend.model.Inventory;
-import com.example.bookdbbackend.service.IBookService;
 import com.example.bookdbbackend.service.IInventoryService;
 import com.example.bookdbbackend.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
-import java.util.List;
 import java.util.Map;
 
 /**

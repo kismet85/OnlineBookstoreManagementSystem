@@ -31,6 +31,11 @@ public class BookController {
     private final UserDetailsService userDetailsService;
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
+    private String bearer = "Bearer ";
+    private String invalidToken = "Invalid token";
+
+    private String roleadmin = "ROLE_ADMIN";
+    private String accessDenied = "Access denied";
     /**
      * Endpoint for getting all books.
      *
@@ -86,20 +91,20 @@ public class BookController {
     public ResponseEntity<?> addBook(@RequestBody BookRequest bookRequest, @RequestHeader("Authorization") String token) {
         try {
             // Extract and validate the token
-            String actualToken = token.replace("Bearer ", "");
+            String actualToken = token.replace(bearer, "");
             String username = jwtService.extractUsername(actualToken);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (!jwtService.isTokenValid(actualToken, userDetails)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(invalidToken);
             }
 
             // Check if the user has admin privileges
             boolean isAdmin = userDetails.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                    .anyMatch(a -> a.getAuthority().equals(roleadmin));
 
             if (!isAdmin) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(accessDenied);
             }
 
             // Create the book and return the response
@@ -122,20 +127,20 @@ public class BookController {
      */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable Long id, @RequestHeader("Authorization") String token) {
-        String actualToken = token.replace("Bearer ", "");
+        String actualToken = token.replace(bearer, "");
         String username = jwtService.extractUsername(actualToken);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         // Check if the token is valid
         if (!jwtService.isTokenValid(actualToken, userDetails)) {
-            return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(invalidToken, HttpStatus.UNAUTHORIZED);
         }
 
         // Check if the user is an admin
-        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(roleadmin));
         if (!isAdmin) {
-            return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(accessDenied, HttpStatus.FORBIDDEN);
         }
 
         try {
@@ -156,20 +161,20 @@ public class BookController {
      */
     @GetMapping("/dummy")
     public ResponseEntity<?> createDummyBook(@RequestHeader("Authorization") String token) {
-        String actualToken = token.replace("Bearer ", "");
+        String actualToken = token.replace(bearer, "");
         String username = jwtService.extractUsername(actualToken);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         // Check if the token is valid
         if (!jwtService.isTokenValid(actualToken, userDetails)) {
-            return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(invalidToken, HttpStatus.UNAUTHORIZED);
         }
 
         // Check if the user is an admin
-        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(roleadmin));
         if (!isAdmin) {
-            return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(accessDenied, HttpStatus.FORBIDDEN);
         }
 
         BookRequest bookRequest = iBookService.createDummyBook();
@@ -187,7 +192,7 @@ public class BookController {
     @PostMapping("/{id}")
     public ResponseEntity<?> updateBook(@RequestBody Map<String, Object> updates, @PathVariable Long id, @RequestHeader("Authorization") String token) {
 
-        String actualToken = token.replace("Bearer ", "");
+        String actualToken = token.replace(bearer, "");
         String username = jwtService.extractUsername(actualToken);
 
         // Load user details using the extracted username
@@ -199,7 +204,7 @@ public class BookController {
         }
 
         // Check if the user has admin privileges
-        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(roleadmin));
         logger.info("User role is admin: " + isAdmin);
 
         // If the user is not an admin, return a 403 Forbidden status

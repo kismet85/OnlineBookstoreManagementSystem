@@ -1,6 +1,5 @@
 package com.example.bookdbbackend.controller;
 
-import com.example.bookdbbackend.exception.AuthorNotFoundException;
 import com.example.bookdbbackend.model.Author;
 import com.example.bookdbbackend.service.IAuthorService;
 import lombok.RequiredArgsConstructor;
