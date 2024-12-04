@@ -27,6 +27,8 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class BookService implements IBookService {
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
+    private static final String NOT_FOUND = " not found";
+    private static final String BOOK_ID = "Book with id ";
 
     @Autowired
     private final BookRepository bookRepository;
@@ -138,7 +140,7 @@ public class BookService implements IBookService {
     public Book getBookById(Long id) {
         Optional<Book> book = bookRepository.findById(id);
         if (book.isEmpty()) {
-            throw new BookNotFoundException("Book with id " + id + " not found");
+            throw new BookNotFoundException(BOOK_ID + id + NOT_FOUND);
         }
 
         return book.get();
@@ -158,7 +160,7 @@ public class BookService implements IBookService {
             logger.info("Updates: " + updates.toString());
             Book book = getBookById(id);
             if (!bookAlreadyExists(id)) {
-                throw new BookNotFoundException("Book with id " + id + " not found");
+                throw new BookNotFoundException(BOOK_ID + id + NOT_FOUND);
             }
 
             Map<String, Consumer<Object>> updateActions = new HashMap<>();
@@ -234,7 +236,7 @@ public class BookService implements IBookService {
     @Override
     public void deleteBook(Long id) {
         if (!bookAlreadyExists(id)) {
-            throw new BookNotFoundException("Book with id " + id + " not found");
+            throw new BookNotFoundException(BOOK_ID + id + NOT_FOUND);
         }
         bookRepository.deleteById(id);
     }
@@ -250,7 +252,7 @@ public class BookService implements IBookService {
     public List<Book> getBooksByTitle(String title) {
         List<Book> books = bookRepository.findBooksByTitleContainingIgnoreCase(title);
         if (books.isEmpty()) {
-            throw new BookNotFoundException("Book with title " + title + " not found");
+            throw new BookNotFoundException("Book with title " + title + NOT_FOUND);
         }
         return books;
     }
@@ -266,7 +268,7 @@ public class BookService implements IBookService {
     public Book getBookByIsbn(String isbn) {
         Optional<Book> book = bookRepository.findBookByIsbn(isbn);
         if (!book.isPresent()) {
-            throw new BookNotFoundException("Book with isbn " + isbn + " not found");
+            throw new BookNotFoundException("Book with isbn " + isbn + NOT_FOUND);
         }
         return book.get();
     }
@@ -282,7 +284,7 @@ public class BookService implements IBookService {
     public List<Book> getBooksByAuthor(String author) {
         List<Book> books = bookRepository.findBooksByAuthorsFirstNameContainingIgnoreCase(author);
         if (books.isEmpty()) {
-            throw new BookNotFoundException("Book with author " + author + " not found");
+            throw new BookNotFoundException("Book with author " + author + NOT_FOUND);
         }
         return books;
     }
@@ -298,7 +300,7 @@ public class BookService implements IBookService {
     public List<Book> getBooksByGenre(String genre) {
         List<Book> books = bookRepository.findBooksByGenreContainingIgnoreCase(genre);
         if (books.isEmpty()) {
-            throw new BookNotFoundException("Book with genre " + genre + " not found");
+            throw new BookNotFoundException("Book with genre " + genre + NOT_FOUND);
         }
         return books;
     }
@@ -314,7 +316,7 @@ public class BookService implements IBookService {
     public List<Book> getBooksByPublisherName(String publisher) {
         List<Book> books = bookRepository.findBooksByPublisherName(publisher);
         if (books.isEmpty()) {
-            throw new BookNotFoundException("Book with publisher " + publisher + " not found");
+            throw new BookNotFoundException("Book with publisher " + publisher + NOT_FOUND);
         }
         return books;
     }
@@ -406,7 +408,7 @@ public class BookService implements IBookService {
                 author.setLastName(authorUpdate.get("lastName"));
                 authors.add(authorRepository.save(author));
             } else {
-                logger.warn("Author with ID " + authorId + " not found");
+                logger.warn("Author with ID " + authorId + NOT_FOUND);
             }
         }
         book.setAuthors(authors);

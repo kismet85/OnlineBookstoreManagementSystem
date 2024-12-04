@@ -34,13 +34,10 @@ public class InventoryService implements IInventoryService {
             throw new InventoryNotFoundException("Inventory not found");
         }
         for (Map.Entry<String, Object> entry : updates.entrySet()) {
-            switch (entry.getKey()) {
-                case "stock_level_new":
-                    inventory.setStock_level_new((Integer) entry.getValue());
-                    break;
-                case "stock_level_used":
-                    inventory.setStock_level_used((Integer) entry.getValue());
-                    break;
+            if ("stock_level_new".equals(entry.getKey())) {
+                inventory.setStock_level_new((Integer) entry.getValue());
+            } else if ("stock_level_used".equals(entry.getKey())) {
+                inventory.setStock_level_used((Integer) entry.getValue());
             }
         }
         return inventoryRepository.save(inventory);

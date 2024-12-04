@@ -239,43 +239,7 @@ class UserControllerTest {
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
-    /*
-        @Test
-        void getUserByIdWithUnauthorizedToken() {
-            Long id = 1L;
-            String token = "Bearer invalidtoken";
-            String actualToken = token.replace("Bearer ", "");
-            String username = "admin";
 
-            UserDetails userDetails = mock(UserDetails.class);
-            when(jwtService.extractUsername(actualToken)).thenReturn(username);
-            when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
-            when(jwtService.isTokenValid(actualToken, userDetails)).thenReturn(false);
-
-            ResponseEntity<User> response = userController.getUserById(id);
-
-            assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        }
-
-        @Test
-        void searchUsersWithUnauthorizedToken() throws Exception {
-            String query = "test";
-            String token = "Bearer invalidtoken"; // Mock invalid token
-            String actualToken = token.replace("Bearer ", "");
-            String username = "admin";
-
-            // Mock the JWT service to simulate invalid token
-            when(jwtService.extractUsername(actualToken)).thenReturn(username);
-            when(userDetailsService.loadUserByUsername(username)).thenReturn(mock(UserDetails.class));
-            when(jwtService.isTokenValid(actualToken, mock(UserDetails.class))).thenReturn(false); // Invalid token
-
-            // Set up MockMvc to perform the request
-            mockMvc.perform(get("/users/search") // Adjust the URL as per your controller
-                            .param("query", query)
-                            .header("Authorization", token))  // Add the invalid token in the header
-                    .andExpect(status().isUnauthorized());  // Expect a 401 Unauthorized status
-        }
-        */
     @Test
     void deleteUserWithUnauthorizedToken() {
         Long id = 1L;

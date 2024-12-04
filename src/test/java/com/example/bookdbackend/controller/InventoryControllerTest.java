@@ -67,7 +67,7 @@ class InventoryControllerTest {
         when(jwtService.extractUsername(actualToken)).thenReturn(username);
         when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
         when(jwtService.isTokenValid(actualToken, userDetails)).thenReturn(true);
-        //when(userDetails.getAuthorities()).thenReturn(Collections.singletonList((GrantedAuthority) () -> "ROLE_ADMIN"));
+
         when(iInventoryService.updateInventory(updates, id)).thenReturn(updatedInventory);
 
         ResponseEntity<Inventory> response = inventoryController.updateInventory(updates, id, token);
