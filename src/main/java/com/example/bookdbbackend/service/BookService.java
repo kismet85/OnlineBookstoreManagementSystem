@@ -396,9 +396,11 @@ public class BookService implements IBookService {
      * @param authorUpdates the updates to apply
      */
     private void updateAuthors(Book book, List<Map<String, String>> authorUpdates) {
+        logger.info("authorUpdates: " + authorUpdates.toString());
         Set<Author> authors = new HashSet<>();
         for (Map<String, String> authorUpdate : authorUpdates) {
-            Long authorId = Long.valueOf(authorUpdate.get("author_id"));
+            Object authorIdObject = authorUpdate.get("author_id");
+            Long authorId = ((Number) authorIdObject).longValue();
             Optional<Author> existingAuthor = authorRepository.findById(authorId);
             if (existingAuthor.isPresent()) {
                 Author author = existingAuthor.get();
@@ -409,6 +411,7 @@ public class BookService implements IBookService {
                 logger.warn("Author with ID " + authorId + " not found");
             }
         }
+        logger.info("Updates: " + authors.toString());
         book.setAuthors(authors);
     }
 }
